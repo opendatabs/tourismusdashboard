@@ -1,0 +1,6 @@
+.Rhistory
+.Rproj.user/
+.RData
+**.csv
+app_write_OGD.R
+app_load_data.R

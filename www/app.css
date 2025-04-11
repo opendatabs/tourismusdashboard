@@ -1,0 +1,238 @@
+                    
+                          
+body {
+  font-family: 'Inter', sans-serif; 
+  font-size: 16px !important; 
+}                      
+ 
+ a:hover { 
+  color: #7BB589 !important; 
+  
+}
+.far, .fas{
+  font-size: 20px !important;
+} 
+
+.navbar.navbar-default { 
+  background-color: #ddecde !important; 
+  color: white !important; }
+
+
+.vscomp-wrapper:focus .vscomp-toggle-button{
+  border-color:  #1E4557 !important;
+  border-radius: 10px !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+
+.vscomp-wrapper.focused .vscomp-toggle-button{
+    background-color: #ffffff !important;
+    border-color: #D7BDEA !important;
+    border-radius: 10px !important;
+    border-width: 1px !important;
+    box-shadow: 0px 2px 12px 2px  #D7BDEA, 0px 2px 12px 2px  #F4EDFA, 0px 2px 12px 2px  #ffffff !important;
+}
+.pop-comp-wrapper {
+    box-shadow: 0px 2px 12px 2px  #D7BDEA, 0px 2px 12px 2px  #F4EDFA, 0px 2px 12px 2px  #ffffff !important;
+}
+
+
+.btn, .form-control {
+  font-size: 13px !important; 
+  border-radius: 10px !important;
+  padding: 9px 20px;
+  border-width: 1px !important;
+  height: 40px !important;
+  box-shadow: none !important;
+} 
+
+
+.btn-outline-primary {
+  color: #1E4557 !important;
+  border-color: #1E4557 !important;
+  background-color: #ffffff !important;
+  border-width: 1px;
+}
+
+.btn:hover, .form-control:hover{
+    cursor:pointer !important;
+    color:  #1E4557 !important;
+    border-color: #51b9da !important;
+    border-width: 1px;
+}
+.btn:focus,  .form-control:focus {
+    cursor:pointer !important;
+    color:  #1E4557 !important;
+    border-color: #D7BDEA!important;
+    border-width: 1px;
+    box-shadow: 0px 2px 12px 2px  #D7BDEA, 0px 2px 12px 2px  #F4EDFA, 0px 2px 12px 2px  #ffffff !important;
+}
+.btn:active, .btn:checked{
+    color: #1E4557 !important;
+    background-color: #D7BDEA !important;
+    border-color: #1E4557 !important;
+    border-width: 1px;
+}
+
+.btn:disabled, .form-control:disabled{
+  cursor: not-allowed !important;
+    color: #1E4557 !important;
+    background-color: #BABABA  !important;
+    border-color: transparent !important;
+}
+
+
+.btn-check:checked+.btn, :not(.btn-check)+.btn:active, .btn:first-child:active, .btn.active, .btn.in {
+    color: #1E4557 !important;
+    background-color:#D7BDEA !important;
+    border-color: #1E4557  !important;
+}
+
+
+a:hover { 
+  color: #1E4557 !important;
+  
+}
+
+
+.vscomp-option{
+  color:#0E81A7  !important;
+  border: none !important;
+    outline: none !important;
+}
+.vscomp-option.focused, .vscomp-option.selected, .vscomp-option.hover{
+  color:#1E4557  !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.vscomp-ele[disabled] {
+    border-color: transparent!important;
+    background-color: #BABABA !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    opacity: 1;
+}
+
+
+
+
+
+.air-datepicker-cell.-current- {
+    border-color: #D7BDEA !important;
+    background-color: #ffffff !important;
+    color: #1E4557 !important;
+}
+.air-datepicker-cell.-selected- {
+  color: #ffffff !important;
+  background-color:#1E4557 !important;
+  border: none !important;
+  
+}
+
+label {
+  font-weight: bold;
+  font-size: 14px;}
+
+
+
+#warnung_Zieldatum, #warnung_Zieldatum_2{
+  font-size: 9px;
+  font-weight: bold;
+  color: #B81600;
+}
+
+  
+.radio label {
+  cursor: pointer;}
+  
+
+
+
+.up {
+  -webkit-text-fill-color: #008d4c !important;
+}
+.zero {
+  -webkit-text-fill-color: black !important;
+}
+.down {
+  -webkit-text-fill-color: red !important;
+}
+.nocolor {
+  -webkit-text-fill-color: white !important;
+}
+
+.footer {
+  padding-left:10px !important;
+  padding-bottom: 10px !important;
+}
+
+table.dataTable { 
+  font-family: 'Inter', sans-serif !important; 
+  
+}
+
+table.dataTable thead th { font-weight: 500 !important; font-style: italic !important; 
+  
+}
+
+
+.dataTables_wrapper .dt-buttons {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+        font-size: 12px !important; /* Reduziert die Schriftgröße der Buttons */
+      }
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+        font-size: 12px !important; /* Reduziert die Schriftgröße des Paging */
+      }
+
+.dataTables_wrapper .dataTables_length select {
+        font-size: 12px !important; /* Reduziert die Schriftgröße des Dropdowns für die Länge */
+        padding: 3px 5px !important; /* Macht das Dropdown kleiner */
+      }
+      .dataTables_wrapper .dataTables_filter input {
+        padding: 3px 5px !important; /* Macht das Filterfeld kleiner */
+      }
+
+
+
+.bslib-sidebar-layout > .collapse-toggle {
+       position: absolute;
+       border-radius: 0 5px 5px 0;
+       text-orientation: mixed;
+       height: auto;
+       z-index: 1000;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       transition: all 0.3s;
+       width: auto;
+     }
+
+.bslib-sidebar-layout:not(.sidebar-open) > .collapse-toggle {
+       left: 0;
+       top: 6px;
+       right: auto;  
+     }
+
+.bslib-sidebar-layout > .collapse-toggle > .collapse-icon {
+       fill: black !important;
+     }
+
+.bslib-sidebar-layout > .collapse-toggle::after {
+       color: black;
+       font-size: 10px;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+     }
+.bslib-sidebar-layout > .collapse-toggle[aria-expanded='true']::after {
+       content: 'Filter schliessen';
+     }
+.bslib-sidebar-layout > .collapse-toggle[aria-expanded='false']::after {
+       content: 'Filter';
+     }
+
+
+
+
