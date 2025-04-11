@@ -27,6 +27,7 @@ FROM renku/renkulab-r:4.3.1-0.25.0
 
 WORKDIR /code
 
+USER root
 # Installing packages for using odbc
 RUN apt-get update && apt-get install -y \
     curl gnupg unixodbc unixodbc-dev \
@@ -40,7 +41,6 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/*
 
 # This will fix installing of units, and also prevent similar issues for sf, xml2, httr, and others.
-USER root
 RUN apt-get update && apt-get install -y \
     libudunits2-dev \
     libgdal-dev \
