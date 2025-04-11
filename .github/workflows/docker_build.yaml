@@ -31,12 +31,17 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
 
+      - name: Set lowercase image name
+        id: vars
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
+            ${{ env.IMAGE }}:latest
             ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
