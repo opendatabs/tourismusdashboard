@@ -30,16 +30,15 @@ FROM renku/renkulab-r:4.3.1-0.25.0
 # Uncomment and adapt if code is to be included in the image
 # COPY src /code/src
 
-# Uncomment and adapt if your R or python packages require extra linux (ubuntu) software
-# e.g. the following installs apt-utils and vim; each pkg on its own line, all lines
-# except for the last end with backslash '\' to continue the RUN line
-#
-# USER root
-# RUN apt-get update && \
-#    apt-get install -y --no-install-recommends \
-#    apt-utils \
-#    vim
-# USER ${NB_USER}
+# This will fix installing of units, and also prevent similar issues for sf, xml2, httr, and others.
+RUN apt-get update && apt-get install -y \
+    libudunits2-dev \
+    libgdal-dev \
+    libgeos-dev \
+    libproj-dev \
+    libxml2-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 
 # install the R dependencies
