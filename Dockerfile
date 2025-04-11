@@ -36,11 +36,16 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+## Uses packages as at 01/04/2025
+RUN echo "r <- getOption('repos'); \
+	  r['CRAN'] <- 'https://packagemanager.rstudio.com/cran/__linux__/focal/2025-04-01'; \
+	  options(repos = r);" > ~/.Rprofile
 
-# install the R dependencies
 COPY install.R ./
 RUN R -f install.R
 
 COPY . .
+
+RUN source ${HOME}/.renku/venv/bin/activate && pip install --upgrade httpx
 
 COPY --from=builder ${HOME}/.renku/venv ${HOME}/.renku/venv
