@@ -27,10 +27,8 @@ RUN if [ -n "$RENKU_VERSION" ] ; then \
 
 FROM renku/renkulab-r:4.3.1-0.25.0
 
-# Uncomment and adapt if code is to be included in the image
-# COPY src /code/src
-
 # This will fix installing of units, and also prevent similar issues for sf, xml2, httr, and others.
+USER root
 RUN apt-get update && apt-get install -y \
     libudunits2-dev \
     libgdal-dev \
@@ -42,5 +40,7 @@ RUN apt-get update && apt-get install -y \
 
 
 # install the R dependencies
-COPY install.R /tmp/
-RUN R -f /tmp/install.R
+COPY install.R ./
+RUN R -f install.R
+
+COPY . .
