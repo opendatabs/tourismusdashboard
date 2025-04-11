@@ -1,7 +1,7 @@
 install.packages(c(
   "shiny",
   "shinydashboard",
-  "shinyWidgets"
+  "shinyWidgets",
   "dplyr",
   "tidyr",
   "lubridate",
