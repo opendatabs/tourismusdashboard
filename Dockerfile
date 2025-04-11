@@ -44,3 +44,5 @@ COPY install.R ./
 RUN R -f install.R
 
 COPY . .
+
+COPY --from=builder ${HOME}/.renku/venv ${HOME}/.renku/venv
