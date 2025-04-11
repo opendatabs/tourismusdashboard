@@ -33,13 +33,14 @@ RUN apt-get update && apt-get install -y \
     curl gnupg unixodbc unixodbc-dev \
     apt-transport-https \
     software-properties-common \
- && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
  && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
  && apt-get update \
- && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
-
+ && ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y msodbcsql18 \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+ 
 # This will fix installing of units, and also prevent similar issues for sf, xml2, httr, and others.
 RUN apt-get update && apt-get install -y \
     libudunits2-dev \
