@@ -9,16 +9,18 @@ FROM renku/renkulab-r:4.3.1-0.25.0 as builder
 ARG RENKU_VERSION={{ __renku_version__ | default("2.7.0") }}
 
 # Install renku from pypi or from github if a dev version
-RUN if [ -n "$RENKU_VERSION" ] ; then \
-        source .renku/venv/bin/activate ; \
-        currentversion=$(renku --version) ; \
+RUN python3 -m venv .renku/venv && \
+    . .renku/venv/bin/activate && \
+    pip install --upgrade pip && \
+    if [ -n "$RENKU_VERSION" ] ; then \
+        currentversion=$(renku --version || echo "none") ; \
         if [ "$RENKU_VERSION" != "$currentversion" ] ; then \
-            pip uninstall renku -y ; \
+            pip uninstall renku -y || true ; \
             gitversion=$(echo "$RENKU_VERSION" | sed -n "s/^[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+\(rc[[:digit:]]\+\)*\(\.dev[[:digit:]]\+\)*\(+g\([a-f0-9]\+\)\)*\(+dirty\)*$/\4/p") ; \
             if [ -n "$gitversion" ] ; then \
-                pip install --no-cache-dir --force "git+https://github.com/SwissDataScienceCenter/renku-python.git@$gitversion" ;\
+                pip install --no-cache-dir --force "git+https://github.com/SwissDataScienceCenter/renku-python.git@$gitversion" ; \
             else \
-                pip install --no-cache-dir --force renku==${RENKU_VERSION} ;\
+                pip install --no-cache-dir --force renku==${RENKU_VERSION} ; \
             fi \
         fi \
     fi
