@@ -17,5 +17,9 @@ install.packages(c(
   "purrr",
   "glue",
   "DT",
-  "pacman"
+  "pacman",
+  "bsicons",
+  "highcharter",
+  "janitor",
+  "shinycssloaders"
 ), dependencies = TRUE)
