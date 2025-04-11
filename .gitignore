@@ -2,5 +2,5 @@
 .Rproj.user/
 .RData
 **.csv
-app_write_OGD.R
+.env
 app_load_data.R
