@@ -11,7 +11,7 @@ library(renv)
 
 # Initialize renv if not already initialized
 if (!file.exists("renv.lock")) {
-  renv::init(bare = TRUE)
+  renv::init(force = TRUE)
 }
 
 # Set snapshot date to the one provided
