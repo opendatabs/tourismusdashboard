@@ -1,5 +1,5 @@
 ########################################################
-#        Renku install section - do not edit           #
+#        Renku install section                         #
 
 FROM renku/renkulab-r:4.3.1-0.25.0 as builder
 
@@ -25,6 +25,8 @@ RUN if [ -n "$RENKU_VERSION" ] ; then \
 
 FROM renku/renkulab-r:4.3.1-0.25.0
 
+WORKDIR /code
+
 # This will fix installing of units, and also prevent similar issues for sf, xml2, httr, and others.
 USER root
 RUN apt-get update && apt-get install -y \
@@ -41,7 +43,9 @@ RUN echo "r <- getOption('repos'); \
 	  r['CRAN'] <- 'https://packagemanager.rstudio.com/cran/__linux__/focal/2025-04-01'; \
 	  options(repos = r);" > ~/.Rprofile
 
-COPY install.R ./
-RUN R -f install.R
+COPY install.R /code/
+RUN R -f /code/install.R
+
+COPY . /code/
 
 COPY --from=builder ${HOME}/.renku/venv ${HOME}/.renku/venv
