@@ -44,8 +44,4 @@ RUN echo "r <- getOption('repos'); \
 COPY install.R ./
 RUN R -f install.R
 
-COPY . .
-
-RUN source ${HOME}/.renku/venv/bin/activate && pip install --upgrade httpx
-
 COPY --from=builder ${HOME}/.renku/venv ${HOME}/.renku/venv
