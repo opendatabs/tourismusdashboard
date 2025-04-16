@@ -6,20 +6,14 @@
 pacman::p_load(RODBC, odbc, DBI, tidyverse)
 
 # Establish connection using the file DSN path
-conn <- dbConnect(odbc::odbc(),
-                  Driver = Sys.getenv("DB_DRIVER"),
-                  Server = Sys.getenv("DB_SERVER"),
-                  Database = Sys.getenv("DB_NAME"),
-                  UID = Sys.getenv("DB_UID"),
-                  PWD = Sys.getenv("DB_PWD"),
-                  TrustServerCertificate = "yes")
+conn <- dbConnect(odbc::odbc(), .connection_string = Sys.getenv("DB_CONNECTION"))
 # List all tables in the schema to confirm connection
-tables <- dbListTables(conn, schema = Sys.getenv("DB_VIEW"))
+tables <- dbListTables(conn,  schema = "elm")
 print("Available tables in the schema:")
 print(tables)
 
 # Define the schema and table name
-schema <- Sys.getenv("DB_VIEW")
+schema <- "elm"
 table_name1 <- "vHotelDayData"
 table_name2 <- "vHotelDayNationData"
 
