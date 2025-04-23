@@ -1,35 +1,42 @@
 import sys
 import os
-from datetime import datetime, timedelta
-from pytz import timezone
+import logging
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 def check_embargo_timestamp(file_path: str):
-    tz = timezone("Europe/Zurich")
-    now = datetime.now(tz)
-
     if not os.path.exists(file_path):
-        print(f"SKIP: Embargo file {file_path} does not exist.")
-        sys.exit(0)  # Exit 0 so Airflow marks the task as 'skipped' if you catch this
+        logging.info(f"Embargo file {file_path} does not exist. Skipping.")
+        sys.exit(0)
 
     with open(file_path, "r") as f:
-        timestamp_str = f.read().strip()
+        embargo_datetime_str = f.readline().strip()
+        logging.info(f"Read string {embargo_datetime_str} from file {file_path}")
 
     try:
-        embargo_time = datetime.fromisoformat(timestamp_str).astimezone(tz)
+        embargo_datetime = datetime.fromisoformat(embargo_datetime_str)
     except ValueError as e:
-        print(f"SKIP: Invalid timestamp format in {file_path}: {e}")
+        logging.info(f"Invalid timestamp format: {e}. Skipping.")
         sys.exit(0)
 
-    if now - embargo_time > timedelta(hours=24):
-        print(f"SKIP: Embargo timestamp {embargo_time.isoformat()} is older than 24 hours.")
+    if embargo_datetime.tzinfo is None:
+        logging.info("Datetime string is naive. Adding timezone Europe/Zurich.")
+        embargo_datetime = embargo_datetime.replace(tzinfo=ZoneInfo("Europe/Zurich"))
+
+    now_in_ch = datetime.now(timezone.utc).astimezone(ZoneInfo("Europe/Zurich"))
+    delta = now_in_ch - embargo_datetime
+
+    if delta > timedelta(hours=24):
+        logging.info(f"Embargo timestamp is older than 24 hours. Skipping.")
         sys.exit(0)
 
-    print(f"OK: Embargo timestamp {embargo_time.isoformat()} is recent enough.")
+    logging.info("Embargo timestamp is within the last 24 hours. Proceeding.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python check_embargo.py <path_to_embargo_file>")
         sys.exit(1)
 
-    file_path = sys.argv[1]
-    check_embargo_timestamp(file_path)
+    check_embargo_timestamp(sys.argv[1])
