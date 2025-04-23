@@ -28,6 +28,8 @@ def check_embargo_timestamp(file_path: str):
     now_in_ch = datetime.now(timezone.utc).astimezone(ZoneInfo("Europe/Zurich"))
     delta = now_in_ch - embargo_datetime
 
+    logging.info(f"Delta is {delta}")
+
     if delta > timedelta(hours=24):
         logging.info(f"Embargo timestamp is older than 24 hours. Skipping.")
         sys.exit(0)
