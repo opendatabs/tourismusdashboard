@@ -32,6 +32,10 @@ def check_embargo_timestamp(file_path: str):
         logging.info(f"Embargo timestamp is older than 24 hours. Skipping.")
         sys.exit(0)
 
+    if delta < 0:
+        logging.info(f"Embargo timestamp is in future. Skipping.")
+        sys.exit(0)
+
     logging.info("Embargo timestamp is within the last 24 hours. Proceeding.")
 
 if __name__ == "__main__":
