@@ -26,22 +26,15 @@ library(shinycssloaders)
 library(waiter)
 
 conflicted::conflict_prefer("filter", "dplyr")
+conflicted::conflict_prefer("month", "lubridate")
 
 source("app_functions.R")
 
 # Daten als csv laden:
 tourismus_taeglich_1 <- read.csv("data/tourismus_taeglich_1.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
-  rename(Datum_Jahr = 'Datum Jahr',
-         Datum_Monat = 'Datum Monat',
-         Datum_Tag = 'Datum Tag',
-         Datum_Monat_Tag = 'Datum Monat Tag') %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
-  
+
 tourismus_taeglich_2 <- read.csv("data/tourismus_taeglich_2.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
-  rename(Datum_Jahr = 'Datum Jahr',
-         Datum_Monat = 'Datum Monat',
-         Datum_Tag = 'Datum Tag',
-         Datum_Monat_Tag = 'Datum Monat Tag') %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
 
 # Define Variables
@@ -56,8 +49,8 @@ DD <- max(tourismus_taeglich_1$Datum_Tag[tourismus_taeglich_1$Datum_Jahr == JJJJ
 monate_deutsch <- c("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember")
 
 # UI:
-ui <- navbarPage(
-  title = span(HTML("Tourismus-Dashboard"), style = "margin-right: 100px;"),
+ui <- page_navbar(fillable = FALSE,
+  title = span(HTML("Tourismus-Dashboard"), style = "margin-right: 50px;"),
   
   theme = bs_theme(
     version = 5,
@@ -80,6 +73,22 @@ ui <- navbarPage(
   margin-bottom: 10px;
 }
 
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 1000px) {
+      .navbar-nav {
+            flex-direction: column;
+            align-items: left;
+            justify-content: left;
+            gap: 0px;
+      }
+      
+      /* Reduce top and bottom margin for expanded burger menu */
+      .navbar-collapse {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+      }
+    }
+    
       .navbar .navbar-brand {
         font-size: 24px;
         font-family: 'Inter';
@@ -140,8 +149,9 @@ ui <- navbarPage(
     )
   ),
   
-  tabPanel(
+  nav_panel(
     "Übersicht",
+    page_fluid(
     value_box(
       title = "Tourismuszahlen", 
       value = if (MM == 1) {
@@ -176,11 +186,11 @@ ui <- navbarPage(
         highchartOutput("barPlot_herkunft")
       )
     )
-  ),
+  )),
   
-  tabPanel(
+  nav_panel(
     "Monat",
-    fluidPage(
+    page_fluid(
     layout_sidebar(
       sidebar = sidebar(
         open = T,
@@ -190,8 +200,8 @@ ui <- navbarPage(
           HTML(paste0(
             bs_icon("calendar4"), " Auswertungsjahr"
           )),
-          choices = unique(tourismus_taeglich_1$Datum_Jahr)[-1],
-          selected = max(unique(tourismus_taeglich_1$Datum_Jahr)[-1])
+          choices = unique(tourismus_taeglich_1$Datum_Jahr)[-length(unique(tourismus_taeglich_1$Datum_Jahr))],
+          selected = max(unique(tourismus_taeglich_1$Datum_Jahr))
         ),
         uiOutput("monat_ui"),
         selectInput(
@@ -253,9 +263,9 @@ ui <- navbarPage(
     ))
   ),
   
-  tabPanel(
+  nav_panel(
     "Tag",
-    fluidPage(
+    page_fluid(
       tags$style(HTML("
  .datepicker table tr td.active, 
       .datepicker table tr td.active:hover {
@@ -370,9 +380,9 @@ ui <- navbarPage(
       ))
   ),
   
-  tabPanel(
+  nav_panel(
     "Info",
-    fluidPage(
+    page_fluid(
       h3("Definitionen"),
       p("Hier werden die wichtigsten Begriffe erläutert, welche im Dashboard verwendet werden."),
       uiOutput("info_text"),
@@ -681,191 +691,142 @@ server <- function(input, output, session) {
   
   # Value Box Monat Aufenthalt:
   val_box_monat_aufenthalt <- reactive({
-    req(input$monat, input$herkunft_monat)
+    req(input$monat, input$hotelkategorie_monat, input$herkunft_monat)
     
-    if (length(input$monat) == 1) {
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <- start_month + months(1) - days(1)
-    } else {
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
-    }
+    start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+    end_month <- as.Date(paste(input$monat[length(input$monat)], "-01", sep = "")) + months(1) - days(1)
     
-      tourismus_taeglich_2 %>%
-        filter(
-          Datum >= start_month &
-            Datum <= end_month,
-          Hotelkategorie == input$hotelkategorie_monat,
-          Herkunftsland == input$herkunft_monat
-        )
+    tourismus_taeglich_2 %>%
+      filter(Datum >= start_month & Datum <= end_month,
+             Hotelkategorie == input$hotelkategorie_monat,
+             Herkunftsland == input$herkunft_monat)
   })
   
+  # Value Box Monat Aufenthalt Past:
   val_box_monat_aufenthalt_past <- reactive({
-    req(input$monat)
+    req(input$monat, input$hotelkategorie_monat, input$herkunft_monat)
     
-    if (length(input$monat) == 1) {
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <- start_month + months(1) - days(1)
-    } else {
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
-    }
+    start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+    end_month <- as.Date(paste(input$monat[length(input$monat)], "-01", sep = "")) + months(1) - days(1)
     
     start_month_prev_year <- start_month - years(1)
+    end_month_prev_year <- end_month - years(1)
     
     if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
       end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
-    } else {
-      end_month_prev_year <- end_month - lubridate::years(1)
     }
     
-    # Filter anwenden
-      tourismus_taeglich_2 %>%
-        filter(
-          Datum >= start_month_prev_year &
-            Datum <= end_month_prev_year,
-          Hotelkategorie == input$hotelkategorie_monat,
-          Herkunftsland == input$herkunft_monat
-        )
+    tourismus_taeglich_2 %>%
+      filter(format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
+             format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+             Hotelkategorie == input$hotelkategorie_monat,
+             Herkunftsland == input$herkunft_monat)
   })
   
+  # Value Box Monat Zimmer:
   val_box_monat_zimmer <- reactive({
-    req(input$monat)
-
-    # Überprüfen, ob ein oder mehrere Monate ausgewählt wurden
-    if (length(input$monat) == 1) {
-      # Nur ein Monat ausgewählt
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <- start_month + months(1) - days(1)
-    } else {
-      # Zeitraum mit Start- und Endmonat
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
-    }
-
-    # Filtern des Datensatzes basierend auf dem Zeitraum
+    req(input$monat, input$hotelkategorie_monat)
+    
+    start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+    end_month <- as.Date(paste(input$monat[length(input$monat)], "-01", sep = "")) + months(1) - days(1)
+    
     tourismus_taeglich_1 %>%
-      filter(Datum >= start_month &
-               Datum <= end_month,
+      filter(Datum >= start_month & Datum <= end_month,
              Hotelkategorie == input$hotelkategorie_monat)
   })
-
   
+  # Value Box Monat Zimmer Past:
   val_box_monat_zimmer_past <- reactive({
-    req(input$monat)
-
-    # Überprüfen, ob ein oder mehrere Monate ausgewählt wurden
-    if (length(input$monat) == 1) {
-      # Nur ein Monat ausgewählt
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <- start_month + months(1) - days(1)
-    } else {
-      # Zeitraum mit Start- und Endmonat
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
-    }
-
-    # Verschiebe den Start- und Endmonat um ein Jahr zurück
+    req(input$monat, input$hotelkategorie_monat)
+    
+    start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+    end_month <- as.Date(paste(input$monat[length(input$monat)], "-01", sep = "")) + months(1) - days(1)
+    
     start_month_prev_year <- start_month - years(1)
+    end_month_prev_year <- end_month - years(1)
+    
     if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
       end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
-    } else {
-      end_month_prev_year <- end_month - lubridate::years(1)
     }
-
-    # Filtern des Datensatzes für den gleichen Zeitraum im Vorjahr
-    tourismus_taeglich_1 %>%
-      filter(
-        Datum >= start_month_prev_year &
-          Datum <= end_month_prev_year,
-        Hotelkategorie == input$hotelkategorie_monat
-      )
-  })
-
-
-  val_box_tag_zimmer <- reactive({
-    req(input$startDate_tag, input$endDate_tag)
-    
-    # Start- und Enddatum aus den Eingaben
-    start_date <- as.Date(input$startDate_tag)
-    end_date <- as.Date(input$endDate_tag)
     
     tourismus_taeglich_1 %>%
-      filter(Datum >= start_date &
-               Datum <= end_date,
-             Hotelkategorie == input$hotelkategorie_tag)
+      filter(format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
+             format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+             Hotelkategorie == input$hotelkategorie_monat)
   })
   
-  val_box_tag_zimmer_past <- reactive({
-    req(input$startDate_tag, input$endDate_tag)
+  # Value Box Tag Zimmer:
+  val_box_tag_zimmer <- reactive({
+    req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag)
     
-    start_date <- as.Date(input$startDate_tag) - lubridate::years(1)
-    end_date_prev <- as.Date(input$endDate_tag)
-    
-    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
-      end_date <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
-    } else {
-      end_date <- end_date_prev - lubridate::years(1)
-    }
+    start_date <- as.Date(input$startDate_tag)
+    end_date <- as.Date(input$endDate_tag)
     
     tourismus_taeglich_1 %>%
       filter(Datum >= start_date & Datum <= end_date,
              Hotelkategorie == input$hotelkategorie_tag)
   })
   
+  # Value Box Tag Zimmer Past:
+  val_box_tag_zimmer_past <- reactive({
+    req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag)
+    
+    # Convert the input dates to the first of the month
+    start_month <- as.Date(format(as.Date(input$startDate_tag), "%Y-%m-01"))
+    end_month <- as.Date(format(as.Date(input$endDate_tag), "%Y-%m-01")) + months(1) - days(1)
+    
+    # Compute corresponding previous year period
+    start_month_prev_year <- start_month - years(1)
+    end_month_prev_year <- end_month - years(1)
+    
+    # Handle leap year case for February 29 → February 28
+    if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
+      end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
+    }
+    
+    # Apply filter to match the previous year's period
+    tourismus_taeglich_1 %>%
+      filter(
+        format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
+        format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+        Hotelkategorie == input$hotelkategorie_tag
+      )
+  })
   
-  # Value Box Tag Aufenthalt
+  # Value Box Tag Aufenthalt:
   val_box_tag_aufenthalt <- reactive({
     req(input$startDate_tag, input$endDate_tag, input$herkunft_tag)
     
-    # Start- und Enddatum aus den Eingaben
     start_date <- as.Date(input$startDate_tag)
     end_date <- as.Date(input$endDate_tag)
     
-    # Filter anwenden
-      tourismus_taeglich_2 %>%
-        filter(
-          Datum >= start_date &
-            Datum <= end_date,
-          Hotelkategorie == input$hotelkategorie_tag,
-          Herkunftsland == input$herkunft_tag
-        )
+    tourismus_taeglich_2 %>%
+      filter(Datum >= start_date & Datum <= end_date,
+             Hotelkategorie == input$hotelkategorie_tag,
+             Herkunftsland == input$herkunft_tag)
   })
   
-  #Value Box Tag Aufenthalt past:
+  # Value Box Tag Aufenthalt Past:
   val_box_tag_aufenthalt_past <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$herkunft_tag)
+    req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag, input$herkunft_tag)
     
-    start_date <- as.Date(input$startDate_tag) - lubridate::years(1)
-    end_date_prev <- as.Date(input$endDate_tag)
+    start_month <- as.Date(format(as.Date(input$startDate_tag), "%Y-%m-01"))
+    end_month <- as.Date(format(as.Date(input$endDate_tag), "%Y-%m-01")) + months(1) - days(1)
     
-    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
-      end_date <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
-    } else {
-      end_date <- end_date_prev - lubridate::years(1)
+    start_month_prev_year <- start_month - years(1)
+    end_month_prev_year <- end_month - years(1)
+    
+    if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
+      end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
     }
     
-    # Filter anwenden
-      tourismus_taeglich_2 %>%
-        filter(
-          Datum >= start_date &
-            Datum <= end_date,
-          Hotelkategorie == input$hotelkategorie_tag,
-          Herkunftsland == input$herkunft_tag
-        )
+    tourismus_taeglich_2 %>%
+      filter(format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
+             format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+             Hotelkategorie == input$hotelkategorie_tag,
+             Herkunftsland == input$herkunft_tag)
   })
+  
   
   # data_monat_zimmer
   data_monat_zimmer <- reactive({
@@ -874,15 +835,12 @@ server <- function(input, output, session) {
     # Überprüfen, ob ein oder mehrere Monate ausgewählt wurden
     if (length(input$monat) == 1) {
       # Nur ein Monat ausgewählt
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
+      start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
       end_month <- start_month + months(1) - days(1)
     } else {
       # Zeitraum mit Start- und Endmonat
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
+      start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+      end_month <- as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
     }
     
     # Verschiebe den Start- und Endmonat um ein Jahr zurück
@@ -890,21 +848,19 @@ server <- function(input, output, session) {
     if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
       end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
     } else {
-      end_month_prev_year <- end_month - lubridate::years(1)
+      end_month_prev_year <- end_month - years(1)
     }
     
     # Datensätze für den ausgewählten Zeitraum und den Vergleichszeitraum im Vorjahr erstellen
     bind_1 <- bind_rows(
       tourismus_taeglich_1 %>%
         filter(
-          Datum >= start_month &
-            Datum <= end_month,
+          Datum >= start_month & Datum <= end_month,
           Hotelkategorie == input$hotelkategorie_monat
         ),
       tourismus_taeglich_1 %>%
         filter(
-          Datum >= start_month_prev_year &
-            Datum <= end_month_prev_year,
+          Datum >= start_month_prev_year & Datum <= end_month_prev_year,
           Hotelkategorie == input$hotelkategorie_monat
         )
     )
@@ -924,23 +880,19 @@ server <- function(input, output, session) {
       mutate(Datum_Monat = factor(Datum_Monat, levels = unique(Datum_Monat)))
   })
   
-  
-  # Data_monat_aufenthalt
+  # data_monat_aufenthalt
   data_monat_aufenthalt <- reactive({
     req(input$monat)
     
     # Überprüfen, ob ein oder mehrere Monate ausgewählt wurden
     if (length(input$monat) == 1) {
       # Nur ein Monat ausgewählt
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
+      start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
       end_month <- start_month + months(1) - days(1)
     } else {
       # Zeitraum mit Start- und Endmonat
-      start_month <-
-        as.Date(paste(input$monat[1], "-01", sep = ""))
-      end_month <-
-        as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
+      start_month <- as.Date(paste(input$monat[1], "-01", sep = ""))
+      end_month <- as.Date(paste(input$monat[2], "-01", sep = "")) + months(1) - days(1)
     }
     
     # Verschiebe den Start- und Endmonat um ein Jahr zurück
@@ -948,44 +900,130 @@ server <- function(input, output, session) {
     if (lubridate::month(end_month) == 2 & lubridate::day(end_month) == 29) {
       end_month_prev_year <- as.Date(paste0(lubridate::year(end_month) - 1, "-02-28"))
     } else {
-      end_month_prev_year <- end_month - lubridate::years(1)
+      end_month_prev_year <- end_month - years(1)
     }
     
     # Filter anwenden
-      bind_1 <- bind_rows(
-        tourismus_taeglich_2 %>%
-          filter(
-            Datum >= start_month &
-              Datum <= end_month,
-            Hotelkategorie == input$hotelkategorie_monat,
-            Herkunftsland == input$herkunft_monat
-          ),
-        tourismus_taeglich_2 %>%
-          filter(
-            Datum >= start_month_prev_year &
-              Datum <= end_month_prev_year,
-            Hotelkategorie == input$hotelkategorie_monat,
-            Herkunftsland == input$herkunft_monat
-          )
-      )    # Gruppieren, Zusammenfassen und weitere Berechnungen
-      bind_1 %>%
-        group_by(Datum_Jahr,
-                 Datum_Monat,
-                 Monat,
-                 Hotelkategorie,
-                 Herkunftsland) %>%
-        summarise(
-          `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
-          `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
-          Aufenthaltsdauer = sum(`Anzahl Logiernächte` / `Anzahl Ankünfte`, na.rm = TRUE),
-          .groups = "drop"
-        ) %>%
-        arrange(desc(Datum_Jahr), Monat) %>%
-        mutate(Datum_Monat = factor(Datum_Monat, levels = unique(Datum_Monat)))
-
+    bind_1 <- bind_rows(
+      tourismus_taeglich_2 %>%
+        filter(
+          Datum >= start_month & Datum <= end_month,
+          Hotelkategorie == input$hotelkategorie_monat,
+          Herkunftsland == input$herkunft_monat
+        ),
+      tourismus_taeglich_2 %>%
+        filter(
+          Datum >= start_month_prev_year & Datum <= end_month_prev_year,
+          Hotelkategorie == input$hotelkategorie_monat,
+          Herkunftsland == input$herkunft_monat
+        )
+    )
+    
+    # Gruppieren, Zusammenfassen und weitere Berechnungen
+    bind_1 %>%
+      group_by(Datum_Jahr, Datum_Monat, Monat, Hotelkategorie, Herkunftsland) %>%
+      summarise(
+        `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
+        `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
+        Aufenthaltsdauer = sum(`Anzahl Logiernächte` / `Anzahl Ankünfte`, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      arrange(desc(Datum_Jahr), Monat) %>%
+      mutate(Datum_Monat = factor(Datum_Monat, levels = unique(Datum_Monat)))
   })
   
-
+  # data_tag_aufenthalt
+  data_tag_aufenthalt <- reactive({
+    req(input$startDate_tag, input$endDate_tag, input$herkunft_tag, input$hotelkategorie_tag)
+    
+    start_date <- as.Date(input$startDate_tag)
+    end_date <- as.Date(input$endDate_tag)
+    
+    start_date_past <- as.Date(input$startDate_tag) - lubridate::years(1)
+    end_date_prev <- as.Date(input$endDate_tag)
+    
+    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
+      end_date_past <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
+    } else {
+      end_date_past <- end_date_prev - lubridate::years(1)
+    }
+    
+    # Filter anwenden
+    bind_1 <- bind_rows(
+      tourismus_taeglich_2 %>%
+        filter(
+          Datum >= start_date & Datum <= end_date,
+          Hotelkategorie == input$hotelkategorie_tag,
+          Herkunftsland == input$herkunft_tag
+        ),
+      tourismus_taeglich_2 %>%
+        filter(
+          Datum >= start_date_past & Datum <= end_date_past,
+          Hotelkategorie == input$hotelkategorie_tag,
+          Herkunftsland == input$herkunft_tag
+        )
+    )
+    
+    # Gruppieren, Zusammenfassen und weitere Berechnungen
+    bind_1 %>%
+      group_by(Datum, Datum_Jahr, Datum_Monat, Datum_Monat_Tag, Hotelkategorie, Herkunftsland, Event) %>%
+      summarise(
+        `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
+        `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      arrange(desc(Datum_Jahr), Datum_Monat_Tag) %>%
+      mutate(Datum_Monat_Tag = factor(Datum_Monat_Tag, levels = unique(Datum_Monat_Tag))) %>%
+      complete(Datum_Monat_Tag, Datum_Jahr, fill = list(`Anzahl Logiernächte` = NA))
+  })
+  
+  # data_tag_zimmer
+  data_tag_zimmer <- reactive({
+    req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag)
+    
+    start_date <- as.Date(input$startDate_tag)
+    end_date <- as.Date(input$endDate_tag)
+    
+    start_date_past <- as.Date(input$startDate_tag) - lubridate::years(1)
+    end_date_prev <- as.Date(input$endDate_tag)
+    
+    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
+      end_date_past <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
+    } else {
+      end_date_past <- end_date_prev - lubridate::years(1)
+    }
+    
+    # Filter anwenden (kein Filter auf Herkunftsland, wenn "Total" ausgewählt)
+    bind_1 <- bind_rows(
+      tourismus_taeglich_1 %>%
+        filter(
+          Datum >= start_date & Datum <= end_date,
+          Hotelkategorie == input$hotelkategorie_tag
+        ),
+      tourismus_taeglich_1 %>%
+        filter(
+          Datum >= start_date_past & Datum <= end_date_past,
+          Hotelkategorie == input$hotelkategorie_tag
+        )
+    )
+    
+    # Gruppieren, Zusammenfassen und weitere Berechnungen
+    bind_1 %>%
+      group_by(Datum, Datum_Jahr, Datum_Monat, Datum_Monat_Tag, Hotelkategorie, Event) %>%
+      summarise(
+        `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
+        `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
+        `Anzahl verfügbare Zimmer` = sum(`Anzahl verfügbare Zimmer`, na.rm = TRUE),
+        `Anzahl belegte Zimmer` = sum(`Anzahl belegte Zimmer`, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      mutate(Zimmerauslastung = (`Anzahl belegte Zimmer` / `Anzahl verfügbare Zimmer`) * 100) %>%
+      arrange(desc(Datum_Jahr), Datum_Monat_Tag) %>%
+      mutate(Datum_Monat_Tag = factor(Datum_Monat_Tag, levels = unique(Datum_Monat_Tag))) %>%
+      complete(Datum_Monat_Tag, Datum_Jahr, fill = list(`Zimmerauslastung` = NA))
+  })
+  
+  
   # Data Monat Aufenthalt Table:
   monat_aufenthalt_table <- reactive({
     data_monat_aufenthalt() %>%
@@ -1025,105 +1063,6 @@ server <- function(input, output, session) {
       )
   })
   
-  
-  # data_tag_aufenthalt
-  data_tag_aufenthalt <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$herkunft_tag, input$hotelkategorie_tag)
-    
-    start_date <- as.Date(input$startDate_tag)
-    end_date <- as.Date(input$endDate_tag)
-    
-    start_date_past <- as.Date(input$startDate_tag) - lubridate::years(1)
-    end_date_prev <- as.Date(input$endDate_tag)
-    
-    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
-      end_date_past <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
-    } else {
-      end_date_past <- end_date_prev - lubridate::years(1)
-    }
-    
-    # Filter anwenden
-      bind_1 <- bind_rows(
-        tourismus_taeglich_2 %>%
-          filter(
-            Datum >= start_date &
-              Datum <= end_date,
-            Hotelkategorie == input$hotelkategorie_tag,
-            Herkunftsland == input$herkunft_tag
-          ),
-        tourismus_taeglich_2 %>%
-          filter(
-            Datum >= start_date_past &
-              Datum <= end_date_past,
-            Hotelkategorie == input$hotelkategorie_tag,
-            Herkunftsland == input$herkunft_tag
-          )
-      )    # Gruppieren, Zusammenfassen und weitere Berechnungen
-      bind_1 %>%
-        group_by(Datum,
-                 Datum_Jahr,
-                 Datum_Monat,
-                 Datum_Monat_Tag,
-                 Hotelkategorie,
-                 Herkunftsland) %>%
-        summarise(
-          `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
-          `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
-          .groups = "drop"
-        ) %>%
-        arrange(desc(Datum_Jahr), Datum_Monat_Tag) %>%
-        mutate(Datum_Monat_Tag = factor(Datum_Monat_Tag, levels = unique(Datum_Monat_Tag))) %>%
-        complete(Datum_Monat_Tag, Datum_Jahr, fill = list(`Anzahl Logiernächte` = NA))
-  })
-  
-  # data_tag_zimmer
-  data_tag_zimmer <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag)
-    
-    start_date <- as.Date(input$startDate_tag)
-    end_date <- as.Date(input$endDate_tag)
-    
-    start_date_past <- as.Date(input$startDate_tag) - lubridate::years(1)
-    end_date_prev <- as.Date(input$endDate_tag)
-    
-    if (lubridate::month(end_date_prev) == 2 & lubridate::day(end_date_prev) == 29) {
-      end_date_past <- as.Date(paste0(lubridate::year(end_date_prev) - 1, "-02-28"))
-    } else {
-      end_date_past <- end_date_prev - lubridate::years(1)
-    }
-    
-    # Filter anwenden (kein Filter auf Herkunftsland, wenn "Total" ausgewählt)
-    bind_1 <- bind_rows(
-      tourismus_taeglich_1 %>%
-        filter(
-          Datum >= start_date &
-            Datum <= end_date,
-          Hotelkategorie == input$hotelkategorie_tag
-        ),
-      tourismus_taeglich_1 %>%
-        filter(
-          Datum >= start_date_past &
-            Datum <= end_date_past,
-          Hotelkategorie == input$hotelkategorie_tag
-        )
-    )
-    # Gruppieren, Zusammenfassen und weitere Berechnungen
-    bind_1 %>%
-      group_by(Datum, Datum_Jahr, Datum_Monat, Datum_Monat_Tag, Hotelkategorie) %>%
-      summarise(
-        `Anzahl Ankünfte` = sum(`Anzahl Ankünfte`, na.rm = TRUE),
-        `Anzahl Logiernächte` = sum(`Anzahl Logiernächte`, na.rm = TRUE),
-        `Anzahl verfügbare Zimmer` = sum(`Anzahl verfügbare Zimmer`, na.rm = TRUE),
-        `Anzahl belegte Zimmer` = sum(`Anzahl belegte Zimmer`, na.rm = TRUE),
-        .groups = "drop"
-      ) %>%
-      mutate(Zimmerauslastung = (`Anzahl belegte Zimmer` / `Anzahl verfügbare Zimmer`) * 100) %>%
-      arrange(desc(Datum_Jahr), Datum_Monat_Tag) %>%
-      mutate(Datum_Monat_Tag = factor(Datum_Monat_Tag, levels = unique(Datum_Monat_Tag))) %>%
-      complete(Datum_Monat_Tag, Datum_Jahr, fill = list(`Zimmerauslastung` = NA))
-    
-  })
-  
   # Data Tag Aufenthalt Table:
   tag_aufenthalt_table <- reactive({
     data_tag_aufenthalt() %>%
@@ -1133,7 +1072,8 @@ server <- function(input, output, session) {
         Hotelkategorie,
         Herkunft = Herkunftsland,
         `Anzahl Ankünfte`,
-        `Anzahl Logiernächte`) 
+        `Anzahl Logiernächte`,
+        Event) 
   })
   
   # Data Tag Zimmer Table:
@@ -1147,7 +1087,8 @@ server <- function(input, output, session) {
         Hotelkategorie,
         `Anzahl verfügbare Zimmer`,
         `Anzahl belegte Zimmer`,
-        Zimmerauslastung
+        Zimmerauslastung,
+        Event
       ) %>%  # Nur die gewünschten Spalten auswählen
       rename(
         'Zimmerauslastung (in %)' = Zimmerauslastung,
@@ -1647,11 +1588,6 @@ server <- function(input, output, session) {
         Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format="%m-%d"), "%e. %b")
       )
     
-    group_counts <- data %>%
-      group_by(Datum_Jahr) %>%
-      summarise(count = n()) %>%
-      ungroup()
-    
     # Prüfen, ob nur ein Tag ausgewählt ist
     unique_days <- unique(data$Datum_Monat_Tag)
     is_single_day <- length(unique_days) == 1
@@ -1659,15 +1595,57 @@ server <- function(input, output, session) {
     # Diagrammtyp dynamisch setzen
     chart_type <- if (is_single_day) "column" else "line"
     
+    # Kategorien für x-Achse vorbereiten
+    categories <- unique(data$Datum_Monat_Tag)
+    
+    # Mapping von Kategorie zu Index
+    category_indices <- setNames(0:(length(categories) - 1), categories)
+    
+    # PlotBands für Events vorbereiten (ein Band pro Event über mehrere Tage)
+    event_ranges <- data %>%
+      filter(!is.na(Event) & Event != "") %>%
+      group_by(Event) %>%
+      summarise(
+        start_day = dplyr::first(Datum_Monat_Tag),
+        end_day = dplyr::last(Datum_Monat_Tag),
+        .groups = "drop"
+      ) %>%
+      distinct()
+    
+    if (nrow(event_ranges) == 0) {
+      return(NULL)  # No events to plot
+    }
+    
+    plot_bands <- lapply(1:nrow(event_ranges), function(i) {
+      start_idx <- category_indices[[event_ranges$start_day[i]]]
+      end_idx   <- category_indices[[event_ranges$end_day[i]]]
+      
+      if (is.na(start_idx) || is.na(end_idx)) return(NULL)
+      
+      list(
+        from = start_idx - 0.4,
+        to   = end_idx + 0.4,
+        color = "rgba(200,200,200,0.3)",
+        label = list(
+          text = event_ranges$Event[i],
+          rotation = -90,
+          align = "left",
+          verticalAlign = "bottom",     # move anchor to top
+          x = 12,
+          y = -5,                    # slight shift downward (higher position visually)
+          style = list(color = "#606060", fontSize = "10px")
+        )
+      )
+    })
+    
+    plot_bands <- Filter(Negate(is.null), plot_bands)  # remove NULLs
+    
     hc <- highchart() %>%
       hc_chart(type = chart_type) %>%
       hc_xAxis(
-        if (is_single_day) {
-          list(categories = list(unique(data$Datum_Monat_Tag)))
-        } else {
-          list(categories = unique(data$Datum_Monat_Tag))
-        }
-      ) %>%  
+        categories = categories,
+        plotBands = if (!is_single_day) plot_bands else NULL
+      ) %>%
       hc_legend(
         layout = 'horizontal',
         align = 'left',
@@ -1678,12 +1656,12 @@ server <- function(input, output, session) {
       hc_plotOptions(
         line = list(
           dataLabels = list(enabled = FALSE),
-          marker = list(enabled = FALSE, symbol = "circle") # Marker nur bei "line" deaktivieren
+          marker = list(enabled = FALSE, symbol = "circle")
         ),
-        column = list(pointPadding = 0.2) # Falls "column" gewählt wird
+        column = list(pointPadding = 0.2)
       )
     
-    # Hinzufügen der Serien mit dynamischem Typ
+    # Hinzufügen der Serien
     for (jahr in unique(data$Datum_Jahr)) {
       jahr_data <- data %>% filter(Datum_Jahr == jahr)
       
@@ -1701,6 +1679,8 @@ server <- function(input, output, session) {
       hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
+    
+    hc
   })
   
   # Line Plot 2 Tag:
@@ -1711,26 +1691,61 @@ server <- function(input, output, session) {
         Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format="%m-%d"), "%e. %b")
       )
     
-    group_counts <- data %>%
-      group_by(Datum_Jahr) %>%
-      summarise(count = n()) %>%
-      ungroup()
-    
     # Überprüfen, ob nur ein Tag ausgewählt ist
-    is_single_day <- length(unique(data$Datum_Monat_Tag)) == 1
+    unique_days <- unique(data$Datum_Monat_Tag)
+    is_single_day <- length(unique_days) == 1
     
     # Dynamischen Diagrammtyp festlegen
     chart_type <- ifelse(is_single_day, "column", "line")
     
+    # Kategorien für x-Achse vorbereiten
+    categories <- unique(data$Datum_Monat_Tag)
+    
+    # Mapping von Kategorie zu Index
+    category_indices <- setNames(0:(length(categories) - 1), categories)
+    
+    # PlotBands für Events vorbereiten (optional, falls es Eventdaten gibt)
+    event_ranges <- data %>%
+      filter(!is.na(Event) & Event != "") %>%
+      group_by(Event) %>%
+      summarise(
+        start_day = dplyr::first(Datum_Monat_Tag),
+        end_day = dplyr::last(Datum_Monat_Tag),
+        .groups = "drop"
+      ) %>%
+      distinct()
+    
+    plot_bands <- lapply(1:nrow(event_ranges), function(i) {
+      start_idx <- category_indices[[event_ranges$start_day[i]]]
+      end_idx   <- category_indices[[event_ranges$end_day[i]]]
+      
+      if (is.na(start_idx) || is.na(end_idx)) return(NULL)
+      
+      list(
+        from = start_idx - 0.4,
+        to   = end_idx + 0.4,
+        color = "rgba(200,200,200,0.3)",
+        label = list(
+          text = event_ranges$Event[i],
+          rotation = -90,
+          align = "left",
+          verticalAlign = "top",     # move anchor to top
+          x = 10,
+          y = 110,                    # slight shift downward (higher position visually)
+          style = list(color = "#606060", fontSize = "10px")
+        )
+      )
+    })
+    
+    plot_bands <- Filter(Negate(is.null), plot_bands)  # remove NULLs
+    
+    # Highchart Erstellung
     hc <- highchart() %>%
       hc_chart(type = chart_type) %>%
       hc_xAxis(
-        if (is_single_day) {
-          list(categories = list(unique(data$Datum_Monat_Tag)))
-        } else {
-          list(categories = unique(data$Datum_Monat_Tag))
-        }
-      ) %>% 
+        categories = categories,
+        plotBands = if (!is_single_day) plot_bands else NULL
+      ) %>%
       hc_yAxis(
         labels = list(format = "{value}%"),
         min = 0,
@@ -1746,14 +1761,14 @@ server <- function(input, output, session) {
         shared = TRUE,
         formatter = JS(
           "function () {
-          let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
-          this.points.forEach(function (point) {
-            tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
-                      + point.series.name + ': <b>'
-                      + point.y.toFixed(1).toString().replace('.', ',') + '%' + '</b><br>';
-          });
-          return tooltip;
-        }"
+        let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+        this.points.forEach(function (point) {
+          tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                    + point.series.name + ': <b>'
+                    + point.y.toFixed(1).toString().replace('.', ',') + '%' + '</b><br>';
+        });
+        return tooltip;
+      }"
         )
       ) %>%
       hc_plotOptions(
@@ -1766,11 +1781,12 @@ server <- function(input, output, session) {
     # Hinzufügen der Serien
     for (jahr in unique(data$Datum_Jahr)) {
       jahr_data <- data %>% filter(Datum_Jahr == jahr)
+      
       hc <- hc %>%
         hc_add_series(
           jahr_data,
           type = chart_type,
-          hcaes(x = Datum_Monat, y = Zimmerauslastung),
+          hcaes(x = Datum_Monat_Tag, y = Zimmerauslastung),
           name = as.character(jahr)
         )
     }
@@ -1780,8 +1796,9 @@ server <- function(input, output, session) {
       hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
-  })
-  
+    
+    hc
+  })  
   
   # Data table 1:
   output$dataTable1_Monat <- renderDT( {
@@ -1798,7 +1815,7 @@ server <- function(input, output, session) {
       file_suffix <- paste0(startDate)
     }
     
-    datatable(
+    datatable(style = "default",
       monat_aufenthalt_table(),
       extensions = 'Buttons',
       rownames = FALSE,
@@ -1847,11 +1864,7 @@ server <- function(input, output, session) {
     ) %>%
       # Apply thousands separator only for table display
       formatStyle(
-        columns = c('Anzahl Ankünfte', 'Anzahl Logiernächte'),
-        `text-align` = 'right'
-      ) %>%
-      formatStyle(
-        columns = c('Aufenthaltsdauer (in Tagen)'),
+        columns = c('Anzahl Ankünfte', 'Anzahl Logiernächte', 'Aufenthaltsdauer (in Tagen)'),
         `text-align` = 'right'
       ) %>%
       formatCurrency(
@@ -1886,7 +1899,7 @@ server <- function(input, output, session) {
       file_suffix <- paste0(startDate)
     }
     
-    datatable(
+    datatable(style = "default",
       monat_zimmer_table(),
       extensions = 'Buttons',
       rownames = FALSE,
@@ -1936,11 +1949,7 @@ server <- function(input, output, session) {
     ) %>%
       # Apply thousands separator only for table display
       formatStyle(
-        columns = c('Verfügbare Zimmer', 'Belegte Zimmer'),
-        `text-align` = 'right'
-      ) %>%
-      formatStyle(
-        columns = c('Zimmerauslastung (in %)'),
+        columns = c('Verfügbare Zimmer', 'Belegte Zimmer', 'Zimmerauslastung (in %)'),
         `text-align` = 'right'
       ) %>%
       formatCurrency(
@@ -1962,7 +1971,7 @@ server <- function(input, output, session) {
   
   # Data table 3:
   output$dataTable1_Tag <- renderDT({
-    datatable(
+    datatable(style = "default",
       tag_aufenthalt_table(),
       extensions = 'Buttons',
       rownames = FALSE,
@@ -2030,7 +2039,7 @@ server <- function(input, output, session) {
   
   # Data table 4:
   output$dataTable2_Tag <- renderDT({
-    datatable(
+    datatable(style = "default",
       tag_zimmer_table(),
       extensions = 'Buttons',
       rownames = FALSE,

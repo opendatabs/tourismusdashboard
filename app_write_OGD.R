@@ -7,8 +7,9 @@ pacman::p_load(RODBC, odbc, DBI, tidyverse)
 
 # Establish connection using the file DSN path
 conn <- dbConnect(odbc::odbc(), .connection_string = Sys.getenv("DB_CONNECTION_STRING_TOURISMUS"))
+
 # List all tables in the schema to confirm connection
-tables <- dbListTables(conn,  schema = "elm")
+tables <- dbListTables(conn, schema = "elm")
 print("Available tables in the schema:")
 print(tables)
 
@@ -165,6 +166,5 @@ tourismus_taeglich_2 <- vHotelDayNationData %>%
 
 
 # write CSV for OGD:
-# export tables:
 write.csv(tourismus_taeglich_1, file = "data/100413_tourismus-daily.csv", row.names = FALSE)
 write.csv(tourismus_taeglich_2, file = "data/100414_tourismus-daily.csv", row.names = FALSE)
