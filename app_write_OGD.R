@@ -166,5 +166,5 @@ tourismus_taeglich_2 <- vHotelDayNationData %>%
 
 # write CSV for OGD:
 # export tables:
-write.csv(tourismus_taeglich_1, file = "data/100413_tourismus-daily.csv", row.names = FALSE)
-write.csv(tourismus_taeglich_2, file = "data/100414_tourismus-daily.csv", row.names = FALSE)
+write.csv(tourismus_taeglich_1, file = "data/ogd/100413_tourismus-daily.csv", row.names = FALSE)
+write.csv(tourismus_taeglich_2, file = "data/ogd/100414_tourismus-daily.csv", row.names = FALSE)
