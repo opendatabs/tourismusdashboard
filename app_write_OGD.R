@@ -3,7 +3,7 @@
 #####################################################################################################
 
 # install.packages("pacman")
-pacman::p_load(RODBC, odbc, DBI, tidyverse)
+pacman::p_load(RODBC, odbc, DBI, tidyverse, digest)
 
 # Establish connection using the file DSN path
 conn <- dbConnect(odbc::odbc(), .connection_string = Sys.getenv("DB_CONNECTION_STRING_TOURISMUS"))
@@ -164,7 +164,22 @@ tourismus_taeglich_2 <- vHotelDayNationData %>%
          'Datum Monat Tag' = Datum_Monat_Tag,
          Herkunftsland = Nationalitaet)
 
+# Write only if content changed
+write_if_changed <- function(data, path) {
+  new_hash <- digest(data)
+  if (file.exists(path)) {
+    old_data <- read.csv(path)
+    old_hash <- digest(old_data)
+    if (identical(old_hash, new_hash)) {
+      message(sprintf("No changes in %s – skipping write.", path))
+      return(invisible(FALSE))
+    }
+  }
+  write.csv(data, path, row.names = FALSE)
+  message(sprintf("Wrote updated data to %s", path))
+  invisible(TRUE)
+}
 
 # write CSV for OGD:
-write.csv(tourismus_taeglich_1, file = "data/100413_tourismus-daily.csv", row.names = FALSE)
-write.csv(tourismus_taeglich_2, file = "data/100414_tourismus-daily.csv", row.names = FALSE)
+write_if_changed(tourismus_taeglich_1, "data/100413_tourismus-daily.csv")
+write_if_changed(tourismus_taeglich_2, "data/100414_tourismus-daily.csv")

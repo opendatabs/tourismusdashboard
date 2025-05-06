@@ -3,7 +3,7 @@
 #####################################################################################################
 
 # install.packages("pacman")
-pacman::p_load(RODBC, odbc, DBI, tidyverse, data.table, httr)
+pacman::p_load(RODBC, odbc, DBI, tidyverse, data.table, httr, digest)
 conflicted::conflict_prefer("year", "lubridate")
 conflicted::conflict_prefer("filter", "dplyr")
 
@@ -48,6 +48,23 @@ tourismus_taeglich_2 <- read.csv("data/100414_tourismus-daily.csv", stringsAsFac
   arrange(desc(Datum), Hotelkategorie, Herkunftsland) %>% 
   left_join(tourismus_events) 
 
+
+write_if_changed <- function(data, path) {
+  new_hash <- digest(data)
+  if (file.exists(path)) {
+    old_data <- read.csv(path)
+    old_hash <- digest(old_data)
+    if (identical(old_hash, new_hash)) {
+      message(sprintf("No changes in %s – skipping write.", path))
+      return(invisible(FALSE))
+    }
+  }
+  write.csv(data, path, row.names = FALSE)
+  message(sprintf("Wrote updated data to %s", path))
+  invisible(TRUE)
+}
+
 # CSV herausschreiben:
 saveRDS(tourismus_taeglich_1, file = "data/tourismus_taeglich_1.rds")
 saveRDS(tourismus_taeglich_2, file = "data/tourismus_taeglich_2.rds")
+
