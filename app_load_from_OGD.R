@@ -49,5 +49,5 @@ tourismus_taeglich_2 <- read.csv("data/100414_tourismus-daily.csv", stringsAsFac
   left_join(tourismus_events) 
 
 # CSV herausschreiben:
-write.csv(tourismus_taeglich_1, file = "data/tourismus_taeglich_1.csv", row.names = FALSE)
-write.csv(tourismus_taeglich_2, file = "data/tourismus_taeglich_2.csv", row.names = FALSE)
+saveRDS(tourismus_taeglich_1, file = "data/tourismus_taeglich_1.rds")
+saveRDS(tourismus_taeglich_2, file = "data/tourismus_taeglich_2.rds")

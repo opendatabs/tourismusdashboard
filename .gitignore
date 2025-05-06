@@ -2,5 +2,3 @@
 .Rproj.user/
 .RData
 **.csv
-.env
-app_load_data.R

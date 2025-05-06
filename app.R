@@ -7,7 +7,7 @@
 rm(list = ls())
   
 # load packages:
-library(tidyverse)
+library(dplyr)
 library(DT)
 library(lubridate)
 library(tidyr)
@@ -23,7 +23,7 @@ library(data.table)
 library(bsicons)
 library(shinyWidgets)
 library(shinycssloaders)
-library(waiter)
+# library(waiter)
 
 conflicted::conflict_prefer("filter", "dplyr")
 conflicted::conflict_prefer("month", "lubridate")
@@ -31,10 +31,16 @@ conflicted::conflict_prefer("month", "lubridate")
 source("app_functions.R")
 
 # Daten als csv laden:
-tourismus_taeglich_1 <- read.csv("data/tourismus_taeglich_1.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
+# tourismus_taeglich_1 <- read.csv("data/tourismus_taeglich_1.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
+#   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
+# 
+# tourismus_taeglich_2 <- read.csv("data/tourismus_taeglich_2.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
+#   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
+
+tourismus_taeglich_1 <- readRDS("data/tourismus_taeglich_1.rds") %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
 
-tourismus_taeglich_2 <- read.csv("data/tourismus_taeglich_2.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
+tourismus_taeglich_2 <- readRDS("data/tourismus_taeglich_2.rds") %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
 
 # Define Variables
@@ -58,7 +64,7 @@ ui <- page_navbar(fillable = FALSE,
     secondary = "grey"
   ),
   
-  header = tags$head(use_waiter(),
+  header = tags$head(#use_waiter(),
     tags$style(
       HTML(
         "a:hover { color: #2a9749 !important; }
@@ -183,7 +189,7 @@ ui <- page_navbar(fillable = FALSE,
     layout_columns(
       card(
         card_header("Logiernächte nach Herkunftsland - Top 10"),
-        highchartOutput("barPlot_herkunft")
+        highchartOutput("barPlot_herkunft") %>% withSpinner(color="#2a9749")
       )
     )
   )),
@@ -396,15 +402,15 @@ ui <- page_navbar(fillable = FALSE,
 # server:
 server <- function(input, output, session) {
   
-  waiter_show(
-    html = tagList(
-      bs5_spinner(
-        color = c("dark")
-      ),
-      h3("Tourismus-Dashboard wird geladen...", style = "color: black;")
-    ),
-    color = "#b8d6be"
-  )
+  # waiter_show(
+  #   html = tagList(
+  #     bs5_spinner(
+  #       color = c("dark")
+  #     ),
+  #     h3("Tourismus-Dashboard wird geladen...", style = "color: black;")
+  #   ),
+  #   color = "#b8d6be"
+  # )
   
    output$monat_ui <- renderUI({
     req(input$jahr_monat)
@@ -1432,7 +1438,7 @@ server <- function(input, output, session) {
       hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
-    waiter_hide()
+    # waiter_hide()
     hc
   })
   
