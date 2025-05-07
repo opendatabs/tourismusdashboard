@@ -1735,9 +1735,9 @@ server <- function(input, output, session) {
           text = event_ranges$Event[i],
           rotation = -90,
           align = "left",
-          verticalAlign = "top",     # move anchor to top
-          x = 10,
-          y = 110,                    # slight shift downward (higher position visually)
+          verticalAlign = "bottom",     # move anchor to top
+          x = 12,
+          y = -5,                    # slight shift downward (higher position visually)
           style = list(color = "#606060", fontSize = "10px")
         )
       )
