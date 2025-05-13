@@ -25,7 +25,7 @@ options(DT.options = list(
 stata_theme <- hc_theme(
   chart = list(
     spacingBottom = 30,
-    backgroundColor = NULL,
+    backgroundColor = "white",
     style = list(
       fontFamily = "Inter"
     ),
@@ -74,7 +74,8 @@ stata_theme <- hc_theme(
       borderWidth = 0.0000001,
       dataLabels = list(
         style = list(
-          fontFamily = "Inter"
+          fontFamily = "Inter",
+          fontSize = "10px"
         )
       )
     )
@@ -92,6 +93,7 @@ stata_theme <- hc_theme(
     ),
     labels = list(
       style = list(
+        fontSize = "11px",
         color = "#000000",
         fontFamily = "Inter"
       )
@@ -129,6 +131,7 @@ stata_theme <- hc_theme(
     enabled = TRUE,
     style = list(
       color = "#000000",
+      fontSize = "12px",
       cursor = "default",
       fontFamily = "Inter"
     ),

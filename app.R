@@ -55,85 +55,19 @@ DD <- max(tourismus_taeglich_1$Datum_Tag[tourismus_taeglich_1$Datum_Jahr == JJJJ
 monate_deutsch <- c("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember")
 
 # UI:
-ui <- page_navbar(fillable = FALSE,
-  title = span(HTML("Tourismus-Dashboard"), style = "margin-right: 50px;"),
+ui <- page_navbar(
   
   theme = bs_theme(
     version = 5,
-    primary = "white",
-    secondary = "grey"
+    primary = "#1e6d8b",
+    secondary = "white"
   ),
-  
-  header = tags$head(#use_waiter(),
-    tags$style(
-      HTML(
-        "a:hover { color: #2a9749 !important; }
-      body { font-family: 'Inter', sans-serif; }
-      .navbar.navbar-default { background-color: #b8d6be !important; color: white !important; }
-      .navbar-nav {
-  display: flex;
-  align-items: left;
-  justify-content: left;
-  gap: 40px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
+  bg = "#ddecde",
+  underline = FALSE,
+  header = tags$head(
+                     tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
+                     tags$link(href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap", rel = "stylesheet"),
 
-    /* Responsive adjustments for smaller screens */
-    @media (max-width: 1000px) {
-      .navbar-nav {
-            flex-direction: column;
-            align-items: left;
-            justify-content: left;
-            gap: 0px;
-      }
-      
-      /* Reduce top and bottom margin for expanded burger menu */
-      .navbar-collapse {
-        margin-top: 5px !important;
-        margin-bottom: 5px !important;
-      }
-    }
-    
-      .navbar .navbar-brand {
-        font-size: 24px;
-        font-family: 'Inter';
-      }
-      .navbar-nav > li > a {font-size: 16px; /* Ändere die Schriftgröße hier */}
-      .dataTables_wrapper * { font-family: 'Inter', sans-serif !important; }
-      table.dataTable { font-family: 'Inter', sans-serif !important; }
-      table.dataTable thead th { font-weight: 500 !important; font-style: italic !important; }
-      .dataTables_wrapper .dataTables_paginate, .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select { font-family: 'Inter', sans-serif !important; }
-      .dataTables_wrapper .dataTables_filter input {
-        font-size: 12px !important;
-      }
-      .dataTables_wrapper .dataTable {
-        font-size: 12px !important;
-      }
-      .dataTables_wrapper .dt-buttons {
-        margin-top: 5px !important;
-        margin-bottom: 5px !important;
-        font-size: 12px !important; /* Reduziert die Schriftgröße der Buttons */
-      }
-      .dataTables_wrapper .dataTables_paginate .paginate_button {
-        font-size: 12px !important; /* Reduziert die Schriftgröße des Paging */
-        padding: 5px 10px !important; /* Macht das Paging kleiner */
-      }
-      .dataTables_wrapper .dataTables_length select {
-        font-size: 12px !important; /* Reduziert die Schriftgröße des Dropdowns für die Länge */
-        padding: 3px 5px !important; /* Macht das Dropdown kleiner */
-      }
-      .dataTables_wrapper .dataTables_filter input {
-        padding: 3px 5px !important; /* Macht das Filterfeld kleiner */
-      }
-      /* Change color of the selected option in the dropdown */
-      .selectize-dropdown .selectize-dropdown-content .selected {
-        background-color: #2a9749 !important; /* Custom selected color */
-        color: white !important; /* Ensure contrast */
-      }
-      ")
-    ),
-    tags$link(href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap", rel = "stylesheet"),
     tags$script(HTML("
       function sendWidth() {
         Shiny.setInputValue('window_width', window.innerWidth);
@@ -142,65 +76,61 @@ ui <- page_navbar(fillable = FALSE,
       window.addEventListener('load', sendWidth);
     "))
   ),
-  
-  footer = tags$footer(
-    style = "font-size: 11px; text-align: center; width; 100%; position: relative; bottom: 0;",
-    paste0(
-      "Quelle: ",
-      quelle,
-      " | Dashboard-Version: V1.0 | Daten: ",
-      min(tourismus_taeglich_1$Datum),
-      " bis ",
-      max(tourismus_taeglich_1$Datum)
-    )
-  ),
+  # 
+  # footer = tags$footer(
+  #   style = "font-size: 11px; text-align: center; width; 100%; position: relative; bottom: 0;",
+  #   paste0(
+  #     "Quelle: ",
+  #     quelle,
+  #     " | Dashboard-Version: V1.0 | Daten: ",
+  #     min(tourismus_taeglich_1$Datum),
+  #     " bis ",
+  #     max(tourismus_taeglich_1$Datum)
+  #   )
+  # ),
   
   nav_panel(
     "Übersicht",
-    page_fluid(
-    value_box(
-      title = "Tourismuszahlen", 
-      value = if (MM == 1) {
-        paste0(monate_deutsch[1], " ", JJJJ)
-      } else {
-        paste0(monate_deutsch[1], " - ", monate_deutsch[MM], " ", JJJJ)
-      },
-      p(
+    h1("Tourismuszahlen Basel-Stadt"),
+    h3(
+      paste0(
         if (MM == 1) {
-          paste0("gegenüber ", monate_deutsch[1], " ", JJJJ_alt)
+          paste0(monate_deutsch[1], " ", JJJJ)
         } else {
-          paste0("gegenüber ", monate_deutsch[1], " - ", monate_deutsch[MM], " ", JJJJ_alt)
-        }
-      ),
-      showcase = bs_icon("calendar4-range"),
-      theme_color = "primary",
-      showcase_layout = "top right" 
+          paste0(monate_deutsch[1], " bis ", monate_deutsch[MM], " ", JJJJ)
+        },
+        " gegenüber dem Vorjahr"
+      )
     ),
+    page_fluid(
     layout_columns(
-      uiOutput("Ankuenfte"),
       uiOutput("Logiernaechte"),
+      uiOutput("Ankuenfte"),
       uiOutput("Aufenthaltsdauer")
     ),
     layout_columns(
       uiOutput("verfuegbareZimmer"),
       uiOutput("belegteZimmer"),
       uiOutput("Zimmerauslastung")
+    )
     ),
     layout_columns(
-      card(
-        card_header("Logiernächte nach Herkunftsland - Top 10"),
-        highchartOutput("barPlot_herkunft") %>% withSpinner(color="#2a9749")
-      )
+      page_fluid(
+        h4("Logiernächte nach Herkunftsland - Top 10"),
+        highchartOutput("barPlot_herkunft"))
     )
-  )),
+  ),
   
   nav_panel(
     "Monat",
+    h1("Tourismuszahlen Basel-Stadt"),
+    uiOutput("dynamic_subtitle1"),
     page_fluid(
-    layout_sidebar(
-      sidebar = sidebar(
-        open = T,
-        fillable = FALSE,
+      div(
+        class = "full-width-div",
+        div(
+          class = "full-width-inner",
+      layout_columns(
         selectInput(
           "jahr_monat",
           HTML(paste0(
@@ -216,97 +146,73 @@ ui <- page_navbar(fillable = FALSE,
           choices = c("Total", setdiff(unique(tourismus_taeglich_1$Hotelkategorie), "Total")),
           selected = "Total"
         ),
-        uiOutput("herkunft_ui_monat")
+        uiOutput("herkunft_ui_monat"))
+      )
       ),
       navset_underline(id = "monattabs",
                        nav_panel(
                          "Aufenthalt", 
-                         br(),
-                         layout_columns(
-                                       uiOutput("dynamic_value_box1")
-                                     ),
                                      layout_columns(
-                                       uiOutput("Ankuenfte_Monat"),
                                        uiOutput("Logiernaechte_Monat"),
+                                       uiOutput("Ankuenfte_Monat"),
                                        uiOutput("Aufenthaltsdauer_Monat")
                                      ),
-                                     layout_columns(
-                                       card(
-                                         card_header("Logiernächte nach Monat"),
-                                         highchartOutput("linePlot1_Monat", height = 500) %>% withSpinner(color="#2a9749")
+                                   
+                                       page_fluid(
+                                         h4("Tourismuszahlen nach Monat"),
+                                         radioButtons(
+                                           inline = TRUE,
+                                           inputId = "kat_aufenthalt_monat",
+                                           label = NULL,
+                                           choices = c("Logiernächte", "Ankünfte", "Aufenthaltsdauer (in Tagen)"),
+                                           selected = "Logiernächte"
+                                         ),
+                                           uiOutput("dynamic_month_plot1")
                                        ),
-                                       card(
-                                         card_header("Monatliche Daten"),
+                         layout_columns(
                                          DTOutput("dataTable1_Monat",  height = 500) %>% withSpinner(color="#2a9749")
-                                       )
-                                     )
+                         )
+                                     
                        ),
                        nav_panel(
-                         "Zimmer", 
-                         br(),
-                         layout_columns(
-                                       uiOutput("dynamic_value_box2")
-                                     ),
+                         "Zimmer",
                                      layout_columns(
                                        uiOutput("verfuegbareZimmer_Monat"),
                                        uiOutput("belegteZimmer_Monat"),
                                        uiOutput("Zimmerauslastung_Monat")
                                      ),
-                                     layout_columns(
-                                       card(
-                                         card_header("Zimmerauslastung nach Monat"),
-                                         highchartOutput("linePlot2_Monat", height = 500) %>% withSpinner(color="#2a9749")
+                           
+                                       page_fluid(
+                                         h4("Tourismuszahlen nach Monat"),
+                                         radioButtons(
+                                           inline = TRUE,
+                                           inputId = "kat_zimmer_monat",
+                                           label = NULL,
+                                           choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
+                                           selected = "Verfügbare Zimmer"
+                                         ),
+                                           uiOutput("dynamic_month_plot2")
                                        ),
-                                       card(
-                                         card_header("Monatliche Daten"),
+                         layout_columns(
                                          DTOutput("dataTable2_Monat", height = 500) %>% withSpinner(color="#2a9749")
-                                       )
-                                     )
+                         )
+                                     
                        )
-                       
       )
       
-    ))
+    )
   ),
   
   nav_panel(
     "Tag",
+    h1("Tourismuszahlen Basel-Stadt"),
+    uiOutput("dynamic_subtitle2"),
+    div(
+      class = "full-width-div",
+      div(
+        class = "full-width-inner",
     page_fluid(
-      tags$style(HTML("
- .datepicker table tr td.active, 
-      .datepicker table tr td.active:hover {
-        background-color: #2a9749 !important;
-        color: white !important;
-      }
-      
-      .datepicker {
-        font-family: Inter, sans-serif;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-      }
-      
-      .datepicker table tr td, 
-      .datepicker table tr th {
-        padding: 8px;
-      }
-      
-      .datepicker-dropdown {
-        border-radius: 10px;
-        overflow: hidden;
-      }
-          .air-datepicker-cell.-selected- {
-      background-color: #2a9749 !important; /* Hintergrundfarbe */
-    }
-        .air-datepicker-body--day-name {
-      color: #1e4557 !important; /* Ändere die Farbe hier */
-      
-        }
-    ")),
-      layout_sidebar(
-        sidebar = sidebar(
-          open = T,
-          fillable = FALSE,
+      layout_columns(
           dateInput(
             "startDate_tag",
             HTML(paste0(bs_icon("calendar3-week"), " Startdatum")),
@@ -334,84 +240,86 @@ ui <- page_navbar(fillable = FALSE,
                            selected = "Total"
                          ),
           uiOutput("herkunft_ui_tag")
+      )
+    ))
         ),
         navset_underline(id = "tagtabs",
                          nav_panel(
                            "Aufenthalt", 
-                           br(),
                            layout_columns(
-                             uiOutput("dynamic_value_box3")
-                           ),
-                           layout_columns(
-                             uiOutput("Ankuenfte_Tag"),
                              uiOutput("Logiernaechte_Tag"),
+                             uiOutput("Ankuenfte_Tag"),
                              uiOutput("Aufenthaltsdauer_Tag")
                            ),
-                           layout_columns(
-                             card(
-                               card_header("Logiernächte nach Tag"),
-                               highchartOutput("linePlot1_Tag", height = 500) %>% withSpinner(color="#2a9749")
+               
+                           page_fluid(
+                             h4("Tourismuszahlen nach Tag"),
+                             radioButtons(
+                               inline = TRUE,
+                               inputId = "kat_aufenthalt_tag",
+                               label = NULL,
+                               choices = c("Logiernächte", "Ankünfte"),
+                               selected = "Logiernächte"
                              ),
-                             card(
-                               card_header("Tägliche Daten"),
+                               uiOutput("dynamic_day_plot1")
+                           ),
+                           layout_columns(
                                DTOutput("dataTable1_Tag",  height = 500) %>% withSpinner(color="#2a9749")
-                             )
                            )
                          ),
                          nav_panel(
                            "Zimmer", 
-                           br(),
-                           layout_columns(
-                             uiOutput("dynamic_value_box4")
-                           ),
                            layout_columns(
                              uiOutput("verfuegbareZimmer_Tag"),
                              uiOutput("belegteZimmer_Tag"),
                              uiOutput("Zimmerauslastung_Tag")
                            ),
-                           layout_columns(
-                             card(
-                               card_header("Zimmerauslastung nach Tag"),
-                               highchartOutput("linePlot2_Tag", height = 500) %>% withSpinner(color="#2a9749")
+                           
+                           page_fluid(
+                             h4("Tourismuszahlen nach Tag"),
+                             radioButtons(
+                               inline = TRUE,
+                               inputId = "kat_zimmer_tag",
+                               label = NULL,
+                               choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
+                               selected = "Verfügbare Zimmer"
                              ),
-                             card(
-                               card_header("Tägliche Daten"),
+                               uiOutput("dynamic_day_plot2")
+                           ),
+                           layout_columns(
                                DTOutput("dataTable2_Tag", height = 500) %>% withSpinner(color="#2a9749")
-                             )
                            )
                          )
-                         
-        )
-        
-      ))
+      )
   ),
   
   nav_panel(
     "Info",
+    h1("Informationen"),
+    h3("Hier finden Sie die wichtigsten Definitionen zur Tourismusstatistik und eine Kontaktangabe für Fragen."),
+    div(
+      class = "full-width-div",
+      div(
+        class = "full-width-inner",
+        h2("Definitionen"),
+        h5("Hier werden die wichtigsten Begriffe erläutert, welche im Dashboard verwendet werden."),
+        uiOutput("info_text")
+      )
+    ),
     page_fluid(
-      h3("Definitionen"),
-      p("Hier werden die wichtigsten Begriffe erläutert, welche im Dashboard verwendet werden."),
-      uiOutput("info_text"),
-      br(),
       h3("Kontakt"),
-      p("Statistisches Amt Basel-Stadt", br(), "Fabienne Hofer", br(), a("fabienne.hofer@bs.ch", href = "mailto:fabienne.hofer@bs.ch", style = "color: black;"))
+      img(src = "fh.jpg"),
+      p("Fabienne Hofer", style = "font-weight: bold;"),
+      a("+41 61 267 87 47", class = "kontakt"),
+      a("fabienne.hofer@bs.ch", href = "mailto:fabienne.hofer@bs.ch", class = "kontakt")
+      
     )
   )
 )
 
 # server:
 server <- function(input, output, session) {
-  
-  # waiter_show(
-  #   html = tagList(
-  #     bs5_spinner(
-  #       color = c("dark")
-  #     ),
-  #     h3("Tourismus-Dashboard wird geladen...", style = "color: black;")
-  #   ),
-  #   color = "#b8d6be"
-  # )
-  
+
    output$monat_ui <- renderUI({
     req(input$jahr_monat)
     selected_year <- input$jahr_monat
@@ -451,120 +359,22 @@ server <- function(input, output, session) {
     }
     
     if (length(selected_month_range) == 1) {
-      # Single month selected
-      month <- format(as.Date(selected_month_range[1]), "%B")
-      return(paste0(month, " ", selected_year))
-    } else {
-      # Range of months selected
-      month_start <- format(as.Date(selected_month_range[1]), "%B")
-      month_end <- format(as.Date(selected_month_range[2]), "%B")
-      return(paste0(month_start, " - ", month_end, " ", selected_year))
-    }
-  })
-  
-  # Value Box Monat Aufenthalt Past:
-  reactive_value_text_past1 <- reactive({
-    req(input$monat, input$jahr_monat)
-    selected_year <- as.numeric(input$jahr_monat)
-    selected_year_past <- selected_year - 1
-    selected_month_range <- input$monat
-    
-    if (is.null(selected_month_range)) {
-      return(paste0("Jahr ", selected_year_past))
-    }
-    
-    if (length(selected_month_range) == 1) {
-      # Single month selected
-      month <- format(as.Date(selected_month_range[1]), "%B")
-      return(paste0(month, " ", selected_year_past))
-    } else {
-      # Range of months selected
-      month_start <- format(as.Date(selected_month_range[1]), "%B")
-      month_end <- format(as.Date(selected_month_range[2]), "%B")
-      return(paste0(month_start, " - ", month_end, " ", selected_year_past))
-    }
-  })
-  
-  # Dynamic value box
-  output$dynamic_value_box1 <- renderUI({
-    req(input$monat, input$jahr_monat)
-    value_text1 <- reactive_value_text1()
-    value_text_past1 <- reactive_value_text_past1()
-    
-    value_box(
-      title = "Tourismuszahlen",
-      value = value_text1,
-      p(paste0("gegenüber ", value_text_past1)),
-      showcase = bs_icon("calendar4-range"),
-      theme_color = "primary",
-      showcase_layout = "top right"
-    )
-  })
-  
-  
-  # Value Box Monat Zimmer:
-  reactive_value_text2 <- reactive({
-    req(input$monat, input$jahr_monat)
-    selected_year <- as.numeric(input$jahr_monat)
-    selected_month_range <- input$monat
-    
-    if (is.null(selected_month_range)) {
-      return(paste0("Jahr ", selected_year))
-    }
-    
-    if (length(selected_month_range) == 1) {
-      # Single month selected
-      month <- format(as.Date(selected_month_range[1]), "%B")
-      return(paste0(month, " ", selected_year))
-    } else {
-      # Range of months selected
-      month_start <- format(as.Date(selected_month_range[1]), "%B")
-      month_end <- format(as.Date(selected_month_range[2]), "%B")
-      return(paste0(month_start, " - ", month_end, " ", selected_year))
-    }
-  })
-  
-  # Value Box Monat Zimmer Past:
-  reactive_value_text_past2 <- reactive({
-    req(input$monat, input$jahr_monat)
-    selected_year <- as.numeric(input$jahr_monat)
-    selected_year_past <- selected_year - 1
-    selected_month_range <- input$monat
-    
-    if (is.null(selected_month_range)) {
-      return(paste0("Jahr ", selected_year_past))
-    }
-    
-    if (length(selected_month_range) == 1) {
-      # Single month selected
-      month <- format(as.Date(selected_month_range[1]), "%B")
-      return(paste0(month, " ", selected_year_past))
-    } else {
-      # Range of months selected
-      month_start <- format(as.Date(selected_month_range[1]), "%B")
-      month_end <- format(as.Date(selected_month_range[2]), "%B")
-      return(paste0(month_start, " - ", month_end, " ", selected_year_past))
-    }
-  })
-  
-  # Dynamic value box
-  output$dynamic_value_box2 <- renderUI({
-    req(input$monat)
-    value_text2 <- reactive_value_text2()
-    value_text_past2 <- reactive_value_text_past2()
-    
-    value_box(
-      title = "Tourismuszahlen",
-      value = value_text2,
-      p(paste0("gegenüber ", value_text_past2)),
-      showcase = bs_icon("calendar4-range"),
-      theme_color = "primary",
-      showcase_layout = "top right"
-    )
-  })
-  
 
-  reactive_value_text3 <- reactive({
+      month <- format(as.Date(selected_month_range[1]), "%B")
+      return(paste0(month, " ", selected_year))
+    } else {
+ 
+      month_start <- format(as.Date(selected_month_range[1]), "%B")
+      month_end <- format(as.Date(selected_month_range[2]), "%B")
+      return(paste0(month_start, " bis ", month_end, " ", selected_year))
+    }
+  })
+  
+  output$dynamic_subtitle1 <- renderUI({
+    h3(paste0(reactive_value_text1(), " gegenüber dem Vorjahr"))
+  })
+  
+  reactive_value_text2 <- reactive({
     req(input$startDate_tag, input$endDate_tag, input$window_width)
     
     date_format <- ifelse(input$window_width < 768, "%e. %b %y", "%e. %B %Y")
@@ -574,98 +384,14 @@ server <- function(input, output, session) {
     
     # Überprüfen, ob Start- und Enddatum identisch sind
     if (input$startDate_tag == input$endDate_tag) {
-      return(start_date)  # Nur das Startdatum anzeigen
+      return(start_date)
     } else {
-      return(paste0(start_date, " - ", end_date))
+      return(paste0(start_date, " bis ", end_date))
     }
   })
   
-  reactive_value_text_past3 <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$window_width)
-    
-    date_format <- ifelse(input$window_width < 768, "%e. %b %y", "%e. %B %Y")
-    
-    start_date <- format(input$startDate_tag - lubridate::years(1), date_format)
-    
-    if (lubridate::month(input$endDate_tag) == 2 & lubridate::day(input$endDate_tag) == 29) {
-      end_date <- format(as.Date(paste0(lubridate::year(input$endDate_tag) - 1, "-02-28")), date_format)
-    } else {
-      end_date <- format(input$endDate_tag - lubridate::years(1), date_format)
-    }
-    
-    # Überprüfen, ob Start- und Enddatum identisch sind
-    if (input$startDate_tag == input$endDate_tag) {
-      return(start_date)  # Nur das Startdatum anzeigen
-    } else {
-      return(paste0(start_date, " - ", end_date))
-    }
-  })
-  
-  # Dynamic value box
-  output$dynamic_value_box3 <- renderUI({
-    value_text3 <- reactive_value_text3()
-    value_text_past3 <- reactive_value_text_past3()
-    
-    value_box(
-      title = "Tourismuszahlen",
-      value = value_text3,
-      p(paste0(ifelse(input$window_width < 768, "ggü. ", "gegenüber "), value_text_past3)),
-      showcase = bs_icon("calendar4-range"),
-      theme_color = "primary",
-      showcase_layout = "top right"
-    )
-  })
-  
-  reactive_value_text4 <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$window_width)
-    
-    date_format <- ifelse(input$window_width < 768, "%e. %b %y", "%e. %B %Y")
-    
-    start_date <- format(input$startDate_tag, date_format)
-    end_date <- format(input$endDate_tag, date_format)
-    
-    # Überprüfen, ob Start- und Enddatum identisch sind
-    if (input$startDate_tag == input$endDate_tag) {
-      return(start_date)  # Nur das Startdatum anzeigen
-    } else {
-      return(paste0(start_date, " - ", end_date))
-    }
-  })
-  
-  reactive_value_text_past4 <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$window_width)
-    
-    date_format <- ifelse(input$window_width < 768, "%e. %b %y", "%e. %B %Y")
-    
-    start_date <- format(input$startDate_tag - lubridate::years(1), date_format)
-    
-    if (lubridate::month(input$endDate_tag) == 2 & lubridate::day(input$endDate_tag) == 29) {
-      end_date <- format(as.Date(paste0(lubridate::year(input$endDate_tag) - 1, "-02-28")), date_format)
-    } else {
-      end_date <- format(input$endDate_tag - lubridate::years(1), date_format)
-    }
-    
-    # Überprüfen, ob Start- und Enddatum identisch sind
-    if (input$startDate_tag == input$endDate_tag) {
-      return(start_date)  # Nur das Startdatum anzeigen
-    } else {
-      return(paste0(start_date, " - ", end_date))
-    }
-  })
-  
-  # Dynamic value box
-  output$dynamic_value_box4 <- renderUI({
-    value_text4 <- reactive_value_text4()
-    value_text_past4 <- reactive_value_text_past4()
-    
-    value_box(
-      title = "Tourismuszahlen",
-      value = value_text4,
-      p(paste0(ifelse(input$window_width < 768, "ggü. ", "gegenüber "), value_text_past4)),
-      showcase = bs_icon("calendar4-range"),
-      theme_color = "primary",
-      showcase_layout = "top right"
-    )
+  output$dynamic_subtitle2 <- renderUI({
+    h3(paste0(reactive_value_text2(), " gegenüber dem Vorjahr"))
   })
   
   # Neuster Monat alle Hotels - Tab Übersicht Value Boxen und Plot
@@ -778,8 +504,8 @@ server <- function(input, output, session) {
     req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag)
     
     # Convert the input dates to the first of the month
-    start_month <- as.Date(format(as.Date(input$startDate_tag), "%Y-%m-01"))
-    end_month <- as.Date(format(as.Date(input$endDate_tag), "%Y-%m-01")) + months(1) - days(1)
+    start_month <- as.Date(input$startDate_tag)
+    end_month <- as.Date(input$endDate_tag)
     
     # Compute corresponding previous year period
     start_month_prev_year <- start_month - years(1)
@@ -793,8 +519,8 @@ server <- function(input, output, session) {
     # Apply filter to match the previous year's period
     tourismus_taeglich_1 %>%
       filter(
-        format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
-        format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+        Datum >= start_month_prev_year,
+        Datum <= end_month_prev_year,
         Hotelkategorie == input$hotelkategorie_tag
       )
   })
@@ -816,8 +542,8 @@ server <- function(input, output, session) {
   val_box_tag_aufenthalt_past <- reactive({
     req(input$startDate_tag, input$endDate_tag, input$hotelkategorie_tag, input$herkunft_tag)
     
-    start_month <- as.Date(format(as.Date(input$startDate_tag), "%Y-%m-01"))
-    end_month <- as.Date(format(as.Date(input$endDate_tag), "%Y-%m-01")) + months(1) - days(1)
+    start_month <- as.Date(input$startDate_tag)
+    end_month <- as.Date(input$endDate_tag)
     
     start_month_prev_year <- start_month - years(1)
     end_month_prev_year <- end_month - years(1)
@@ -827,8 +553,8 @@ server <- function(input, output, session) {
     }
     
     tourismus_taeglich_2 %>%
-      filter(format(Datum, "%Y-%m") >= format(start_month_prev_year, "%Y-%m"),
-             format(Datum, "%Y-%m") <= format(end_month_prev_year, "%Y-%m"),
+      filter(Datum >= start_month_prev_year,
+             Datum <= end_month_prev_year,
              Hotelkategorie == input$hotelkategorie_tag,
              Herkunftsland == input$herkunft_tag)
   })
@@ -1159,39 +885,44 @@ server <- function(input, output, session) {
     custom_color <- ifelse(value_change > 0, colors_valueboxes[1], colors_valueboxes[2])
     
     arrow_icon <- if (value_change > 0) {
-      tags$span(
-        bsicons::bs_icon("arrow-up-right-circle"),
-        style = paste0("color: ", colors_valueboxes[1], "; font-size: 2rem;")
+      tags$span(style = "color: #777777; font-size: 0.5em;",
+        icon("arrow-trend-up")
       )
     } else {
-      tags$span(
-        bsicons::bs_icon("arrow-down-right-circle"),
-        style = paste0("color: ", colors_valueboxes[2], "; font-size: 2rem;")
+      tags$span(style = "color: #777777; font-size: 0.5em;",
+                icon("arrow-trend-down")
       )
     }
     
+
+    
     value_box(
-      value = HTML(
-        paste0(
-          "<span style='color: #333333; font-size: 0.9em;'>",
-          add_thousand_separator(current_value, current_data_digits), unit_value,
-          "</span> ",
-          "<span style='font-size: 0.5em; color:",
-          custom_color,
-          ";'>(",
-          ifelse(value_change > 0, "+", ""),
-          add_thousand_separator(value_change, previous_data_digits), unit_change,
-          " | ",
-          ifelse(value_change > 0, "+", ""),
-          add_thousand_separator(round(value_change_proz, 1), 1),
-          "%)</span>"
+      value = tagList(
+        tags$span(
+          style = "display: block; line-height: 0.7em; margin-bottom: 0; padding: 0px 0px 0px 0px;",
+          add_thousand_separator(current_value, current_data_digits), unit_value
+        ),
+        tags$span(
+          style = "display: block; line-height: 0.7em; padding: 0px 0px 0px 0px;",
+        tags$span(
+          style = "font-size: 0.5em; color: #777777;",
+          paste0(
+            " (",
+            ifelse(value_change > 0, "+", ""),
+            add_thousand_separator(value_change, previous_data_digits), unit_change,
+            " | ",
+            ifelse(value_change > 0, "+", ""),
+            add_thousand_separator(round(value_change_proz, 1), 1),
+            "%)"
+          )),
+        arrow_icon
         )
       ),
       label,
-      showcase = tagList(arrow_icon),
-      showcase_layout = "top right",
+      showcase = NULL,
       height = NULL
     )
+    
   }
   
   # Value-Boxen:
@@ -1202,7 +933,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(newest_month_all_hotels_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = "Ankünfte \u2211"
+      label = tagList(p("Ankünfte", style = "font-weight: bold;"),
+                                       p("aufsummiert", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1213,7 +945,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(newest_month_all_hotels_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = "Logiernächte \u2211"
+      label = tagList(p("Logiernächte", style = "font-weight: bold;"),
+                      p("aufsummiert", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1224,7 +957,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(newest_month_all_hotels_past()$`Anzahl Logiernächte`) / sum(newest_month_all_hotels_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = "Aufenthaltsdauer \u00D8",
+      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = " Tage",
     )
   })
@@ -1236,7 +970,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(newest_month_all_hotels_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = "Verfügbare Zimmer \u00D8"
+      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1247,7 +982,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(newest_month_all_hotels_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = "Belegte Zimmer \u00D8"
+      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1258,7 +994,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(newest_month_all_hotels_past()$`Anzahl belegte Zimmer`) / sum(newest_month_all_hotels_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = "Zimmerauslastung \u00D8",
+      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = "%",
       unit_change = "PP"
     )
@@ -1272,7 +1009,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_monat_aufenthalt_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = "Ankünfte \u2211"
+      label = tagList(p("Ankünfte", style = "font-weight: bold;"),                                        
+                      p("aufsummiert", style = "font-size: 0.7em;"))
     )
   })
   
@@ -1283,7 +1021,24 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_monat_aufenthalt_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = "Logiernächte \u2211"
+      label = tagList(p("Logiernächte", style = "font-weight: bold;"),                                        
+                      p("aufsummiert", style = "font-size: 0.7em;"))
+    )
+  })
+  
+  output$Logiernaechte_Monat_Text <- renderUI({
+    current_data = sum(val_box_monat_aufenthalt()$`Anzahl Logiernächte`)
+    previous_data = sum(val_box_monat_aufenthalt_past()$`Anzahl Logiernächte`)
+    diff <- current_data - previous_data
+    mehr_weniger <- ifelse(diff > 0, "mehr", "weniger")
+    # JJJJ <- max(tourismus_taeglich_1$Datum_Jahr)
+    # JJJJ_alt <- JJJJ - 1
+    
+    HTML(
+      paste0(
+        "Im Jahr ", JJJJ, " wurden in den baselstädtischen Hotelbetrieben ", format(current_data, big.mark = "'"), " Logiernächte registriert. ",
+        "Das sind ", format(abs(diff), big.mark = "'"), " ", mehr_weniger, " als im Jahr ", JJJJ_alt, "."
+      )
     )
   })
   
@@ -1294,7 +1049,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(val_box_monat_aufenthalt_past()$`Anzahl Logiernächte`) / sum(val_box_monat_aufenthalt_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = "Aufenthaltsdauer \u00D8",
+      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = " Tage"
     )
   })
@@ -1306,7 +1062,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_monat_zimmer_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = "Verfügbare Zimmer \u00D8"
+      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1317,7 +1074,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_monat_zimmer_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = "Belegte Zimmer \u00D8"
+      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1328,7 +1086,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(val_box_monat_zimmer_past()$`Anzahl belegte Zimmer`) / sum(val_box_monat_zimmer_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = "Zimmerauslastung \u00D8",
+      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = "%",
       unit_change = "PP"
     )
@@ -1342,7 +1101,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_tag_aufenthalt_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = "Ankünfte \u2211"
+      label = tagList(p("Ankünfte", style = "font-weight: bold;"),                                        
+                      p("aufsummiert", style = "font-size: 0.7em;"))
     )
   })
   
@@ -1353,7 +1113,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_tag_aufenthalt_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = "Logiernächte \u2211"
+      label = tagList(p("Logiernächte", style = "font-weight: bold;"),                                        
+                      p("aufsummiert", style = "font-size: 0.7em;"))
     )
   })
   
@@ -1364,7 +1125,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(val_box_tag_aufenthalt_past()$`Anzahl Logiernächte`) / sum(val_box_tag_aufenthalt_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = "Aufenthaltsdauer \u00D8",
+      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = " Tage"
     )
   })
@@ -1376,7 +1138,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_tag_zimmer_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = "Verfügbare Zimmer \u00D8"
+      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
     
   })
@@ -1388,7 +1151,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_tag_zimmer_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = "Belegte Zimmer \u00D8"
+      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
     )
   })
   
@@ -1399,7 +1163,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(val_box_tag_zimmer_past()$`Anzahl belegte Zimmer`) / sum(val_box_tag_zimmer_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = "Zimmerauslastung \u00D8",
+      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),                       
+                      p("durchschnittlich", style = "font-size: 0.7em;")),
       unit_value = "%",
       unit_change = "PP"
     )
@@ -1445,108 +1210,387 @@ server <- function(input, output, session) {
   
   # Line Plot 1 Monat:
   output$linePlot1_Monat <- renderHighchart({
-    # Daten vorab filtern und Gruppengröße berechnen
-    data <- data_monat_aufenthalt()
-    group_counts <- data %>%
-      group_by(Datum_Jahr) %>%
-      summarise(count = n()) %>%
-      ungroup()
-    
-    # Prüfen, ob nur ein Monat ausgewählt ist
-    unique_months <- unique(data$Monat)
-    is_single_month <- length(unique_months) == 1
-    
-    # Diagrammtyp dynamisch setzen
-    chart_type <- if (is_single_month) "column" else "line"
-    
-    month_mapping <- c(
+    # Monatsnamen definieren
+    month_mapping_long <- c(
+      "1" = "Januar", "2" = "Februar", "3" = "März", "4" = "April", "5" = "Mai", "6" = "Juni", 
+      "7" = "Juli", "8" = "August", "9" = "September", "10" = "Oktober", "11" = "November", "12" = "Dezember"
+    )
+    month_mapping_short <- c(
       "1" = "Jan", "2" = "Feb", "3" = "Mär", "4" = "Apr", "5" = "Mai", "6" = "Jun", 
       "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Okt", "11" = "Nov", "12" = "Dez"
     )
     
-    # Um die Monatsnamen für die x-Achse zu holen, indem die numerischen Werte genutzt werden
-    xAxis_months <- month_mapping[as.character(unique_months)]
+    data <- data_monat_aufenthalt() %>%
+      mutate(
+        Monat_Jahr = paste(month_mapping_long[as.character(Monat)], Datum_Jahr)
+      ) %>% arrange(Datum_Jahr, Monat)
     
-    hc <- highchart() %>%
-      hc_chart(type = chart_type) %>%
-      hc_xAxis(categories = xAxis_months) %>%
-      hc_legend(
-        layout = 'horizontal',
-        align = 'left',
-        verticalAlign = 'top',
-        enabled = TRUE
-      ) %>%
-      hc_tooltip(shared = TRUE) %>%
-      hc_plotOptions(
-        line = list(
-          dataLabels = list(enabled = FALSE),
-          marker = list(enabled = FALSE, symbol = "circle") # Marker für Linien entfernen
-        ),
-        column = list(pointPadding = 0.2) # pointPadding gesetzt, dataLabels entfernt
-      )
+    # Einmalige Monate und "Monat Jahr"-Kombis extrahieren
+    unique_months <- unique(data$Monat)
+    unique_month_year <- unique(data$Monat_Jahr)
+    is_single_month <- length(unique_months) == 1
+
     
-    # Hinzufügen der Serien
-    for (jahr in rev(unique(data$Datum_Jahr))) {
-      jahr_data <- data %>% filter(Datum_Jahr == jahr)
-      
+    if(input$kat_aufenthalt_monat %in% c("Ankünfte", "Logiernächte")) {
+      if (is_single_month) {
+        hc <- highchart() %>%
+          hc_chart(type = "column") %>%
+          # hc_size(560) %>%
+          hc_xAxis(categories = unique_month_year) %>%
+          hc_yAxis(visible = FALSE) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = FALSE
+          ) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            column = list(
+              dataLabels = list(
+                enabled = TRUE,
+                style = list(
+                  color = "#333333",
+                  fontSize = "12px",
+                  fontWeight = "bold"
+                )
+              )
+            ),
+            column = list(pointPadding = 0)
+          ) %>%
+          hc_add_series(
+            data = data,
+            type = "column",
+            hcaes(x = as.character(Monat_Jahr), y = .data[[paste("Anzahl", input$kat_aufenthalt_monat)]]),
+            color = '#2a9749',
+            name = input$kat_aufenthalt_monat
+          ) %>%
+          hc_colors(colors_plots) %>%
+          hc_credits(enabled = TRUE,     
+                     style = list(
+                       fontSize = "11px"),
+                     text = paste0("Quelle: ", quelle)) %>%
+          hc_exporting(enabled = TRUE) %>%
+          hc_add_theme(stata_theme)
+        
+      } else {
+        hc <- highchart() %>%
+          hc_chart(type = "line") %>%
+          # hc_size(836) %>%
+          hc_xAxis(categories = month_mapping_short[unique_months]) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = TRUE
+          ) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            line = list(
+              dataLabels = list(enabled = FALSE),
+              marker = list(enabled = FALSE, symbol = "circle")
+            ),
+            column = list(pointPadding = 0)
+          )
+        
+        # Serien nach Jahr hinzufügen
+        for (jahr in sort(unique(data$Datum_Jahr))) {
+          jahr_data <- data %>% filter(Datum_Jahr == jahr)
+          hc <- hc %>%
+            hc_add_series(
+              data = jahr_data,
+              type = "line",
+              hcaes(x = Monat, y = .data[[paste("Anzahl", input$kat_aufenthalt_monat)]]),
+              name = as.character(jahr)
+            )
+        }
+      } 
       hc <- hc %>%
-        hc_add_series(
-          jahr_data,
-          type = chart_type,
-          hcaes(x = Monat, y = `Anzahl Logiernächte`),
-          name = as.character(jahr)
-        )
+        hc_colors(colors_plots) %>%
+        hc_credits(enabled = TRUE,     
+                   style = list(
+                     fontSize = "11px"),
+                   text = paste0("Quelle: ", quelle)) %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_add_theme(stata_theme)
     }
     
-    hc <- hc %>%
-      hc_colors(colors_plots) %>%
-      hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
-      hc_exporting(enabled = TRUE) %>%
-      hc_add_theme(stata_theme)
+    else if(input$kat_aufenthalt_monat == "Aufenthaltsdauer (in Tagen)") {
+      if (is_single_month) {
+        hc <- highchart() %>%
+          hc_chart(type = "column") %>%
+          # hc_size(560) %>%
+          hc_xAxis(categories = unique_month_year) %>%
+          hc_yAxis(visible = FALSE) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = FALSE
+          ) %>%
+          hc_tooltip(
+            shared = TRUE,
+            formatter = JS(
+              "function () {
+      let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+      this.points.forEach(function (point) {
+        tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                  + point.series.name + ': <b>'
+                  + point.y.toFixed(2).toString().replace('.', ',') + '</b><br>';
+      });
+      return tooltip;
+    }"
+            )
+          ) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            column = list(
+              dataLabels = list(
+                enabled = TRUE,
+                formatter = JS("function() {
+        return Highcharts.numberFormat(this.y, 2, ',', '');
+      }"),
+                style = list(
+                  color = "#333333",
+                  fontSize = "12px",
+                  fontWeight = "bold"
+                )
+              )
+            ),
+            column = list(pointPadding = 0)
+          ) %>%
+          hc_add_series(
+            data = data,
+            type = "column",
+            hcaes(x = as.character(Monat_Jahr), y = Aufenthaltsdauer),
+            color = '#2a9749',
+            name = "Aufenthaltsdauer (in Tagen)"
+          ) %>%
+          hc_colors(colors_plots) %>%
+          hc_credits(enabled = TRUE,     
+                     style = list(
+                       fontSize = "11px"),
+                     text = paste0("Quelle: ", quelle)) %>%
+          hc_exporting(enabled = TRUE) %>%
+          hc_add_theme(stata_theme)
+        
+      } else {
+        hc <- highchart() %>%
+          hc_chart(type = "line") %>%
+          # hc_size(836) %>%
+          hc_xAxis(categories = month_mapping_short[unique_months]) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = TRUE
+          ) %>%
+          hc_tooltip(
+            shared = TRUE,
+            formatter = JS(
+              "function () {
+      let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+      this.points.forEach(function (point) {
+        tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                  + point.series.name + ': <b>'
+                  + point.y.toFixed(2).toString().replace('.', ',') + '</b><br>';
+      });
+      return tooltip;
+    }"
+            )
+          ) %>%
+          hc_plotOptions(
+            line = list(
+              dataLabels = list(enabled = FALSE),
+              marker = list(enabled = FALSE, symbol = "circle")
+            ),
+            column = list(pointPadding = 0)
+          )
+        
+        # Serien nach Jahr hinzufügen
+        for (jahr in sort(unique(data$Datum_Jahr))) {
+          jahr_data <- data %>% filter(Datum_Jahr == jahr)
+          hc <- hc %>%
+            hc_add_series(
+              data = jahr_data,
+              type = "line",
+              hcaes(x = Monat, y = Aufenthaltsdauer),
+              name = as.character(jahr)
+            )
+        }
+      } 
+      hc <- hc %>%
+        hc_colors(colors_plots) %>%
+        hc_credits(enabled = TRUE,     
+                   style = list(
+                     fontSize = "11px"),
+                   text = paste0("Quelle: ", quelle)) %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_add_theme(stata_theme)
+    }
+    
+    hc
+  })
+  
+  output$dynamic_month_plot1 <- renderUI({
+    if (length(input$monat) == 1) {
+      layout_columns(
+        col_widths=c(6,6),
+      highchartOutput("linePlot1_Monat") %>% withSpinner(color="#2a9749")
+      )
+    } else {
+      layout_columns(
+      highchartOutput("linePlot1_Monat") %>% withSpinner(color="#2a9749")
+      )
+    }
   })
   
   # Line Plot 2 Monat:
   output$linePlot2_Monat <- renderHighchart({
-    # Daten vorab filtern und Gruppengröße berechnen
-    data <- data_monat_zimmer()
-    group_counts <- data %>%
-      group_by(Datum_Jahr) %>%
-      summarise(count = n()) %>%
-      ungroup()
-    
-    # Prüfen, ob nur ein Monat ausgewählt ist
-    unique_months <- unique(data$Monat)
-    is_single_month <- length(unique_months) == 1
-    
-    # Diagrammtyp dynamisch setzen
-    chart_type <- if (is_single_month) "column" else "line"
-    
-    month_mapping <- c(
+    # Monatsnamen definieren
+    month_mapping_long <- c(
+      "1" = "Januar", "2" = "Februar", "3" = "März", "4" = "April", "5" = "Mai", "6" = "Juni", 
+      "7" = "Juli", "8" = "August", "9" = "September", "10" = "Oktober", "11" = "November", "12" = "Dezember"
+    )
+    month_mapping_short <- c(
       "1" = "Jan", "2" = "Feb", "3" = "Mär", "4" = "Apr", "5" = "Mai", "6" = "Jun", 
       "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Okt", "11" = "Nov", "12" = "Dez"
     )
     
-    # Um die Monatsnamen für die x-Achse zu holen
-    xAxis_months <- month_mapping[as.character(unique_months)]
+    data <- data_monat_zimmer() %>%
+      mutate(
+        Monat_Jahr = paste(month_mapping_long[as.character(Monat)], Datum_Jahr),
+        `Anzahl verfügbare Zimmer` = round(`Anzahl verfügbare Zimmer`, 0),
+        `Anzahl belegte Zimmer` = round(`Anzahl belegte Zimmer`, 0)
+      ) %>% arrange(Datum_Jahr, Monat)
     
-    hc <- highchart() %>%
-      hc_chart(type = chart_type) %>%
-      hc_xAxis(categories = xAxis_months) %>%
-      hc_yAxis(
-        labels = list(format = "{value}%"),
-        min = 0,
-        max = 100
-      ) %>%
-      hc_legend(
-        layout = 'horizontal',
-        align = 'left',
-        verticalAlign = 'top',
-        enabled = TRUE
-      ) %>%
-      hc_tooltip(
-        shared = TRUE,
-        formatter = JS(
-          "function () {
+    # Einmalige Monate und "Monat Jahr"-Kombis extrahieren
+    unique_months <- unique(data$Monat)
+    unique_month_year <- unique(data$Monat_Jahr)
+    is_single_month <- length(unique_months) == 1
+    
+    
+    if(input$kat_zimmer_monat %in% c("Verfügbare Zimmer", "Belegte Zimmer")) {
+      if (is_single_month) {
+        hc <- highchart() %>%
+          hc_chart(type = "column") %>%
+          # hc_size(560) %>%
+          hc_xAxis(categories = unique_month_year) %>%
+          hc_yAxis(visible = FALSE) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = FALSE
+          ) %>%
+          hc_tooltip(
+            shared = TRUE,
+            formatter = JS(
+              "function () {
+      let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+      this.points.forEach(function (point) {
+        tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                  + point.series.name + ': <b>'
+                  + point.y.toFixed(0).toString().replace('.', ',') + '</b><br>';
+      });
+      return tooltip;
+    }"
+            )
+          ) %>%
+          hc_plotOptions(
+            column = list(
+              dataLabels = list(
+                enabled = TRUE,
+                format = "{point.y:,.0f}",
+                style = list(
+                  color = "#333333",
+                  fontSize = "12px",
+                  fontWeight = "bold"
+                )
+              )
+            ),
+            column = list(pointPadding = 0)
+          ) %>%
+          hc_add_series(
+            data = data,
+            type = "column",
+            hcaes(
+              x = as.character(Monat_Jahr), 
+              y = .data[[paste0("Anzahl ", tolower(substr(input$kat_zimmer_monat, 1, 1)), substr(input$kat_zimmer_monat, 2, nchar(input$kat_zimmer_monat)))]]
+            ),
+            color = '#2a9749',
+            name = input$kat_zimmer_monat
+          ) %>%
+          hc_colors(colors_plots) %>%
+          hc_credits(enabled = TRUE,     
+                     style = list(
+                       fontSize = "11px"),
+                     text = paste0("Quelle: ", quelle)) %>%
+          hc_exporting(enabled = TRUE) %>%
+          hc_add_theme(stata_theme)
+        
+      } else {
+        hc <- highchart() %>%
+          hc_chart(type = "line") %>%
+          # hc_size(836) %>%
+          hc_xAxis(categories = month_mapping_short[unique_months]) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = TRUE
+          ) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            line = list(
+              dataLabels = list(enabled = FALSE),
+              marker = list(enabled = FALSE, symbol = "circle")
+            ),
+            column = list(pointPadding = 0)
+          )
+        
+        # Serien nach Jahr hinzufügen
+        for (jahr in sort(unique(data$Datum_Jahr))) {
+          jahr_data <- data %>% filter(Datum_Jahr == jahr)
+          hc <- hc %>%
+            hc_add_series(
+              data = jahr_data,
+              type = "line",
+              hcaes(
+                x = Monat, 
+                y = .data[[paste0("Anzahl ", tolower(substr(input$kat_zimmer_monat, 1, 1)), substr(input$kat_zimmer_monat, 2, nchar(input$kat_zimmer_monat)))]]
+              ),
+              name = as.character(jahr)
+            )
+        }
+      } 
+      hc <- hc %>%
+        hc_colors(colors_plots) %>%
+        hc_credits(enabled = TRUE,     
+                   style = list(
+                     fontSize = "11px"),
+                   text = paste0("Quelle: ", quelle)) %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_add_theme(stata_theme)
+    }
+    
+    else if(input$kat_zimmer_monat == "Zimmerauslastung") {
+      if (is_single_month) {
+        hc <- highchart() %>%
+          hc_chart(type = "column") %>%
+          # hc_size(560) %>%
+          hc_xAxis(categories = unique_month_year) %>%
+          hc_yAxis(visible = FALSE) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = FALSE
+          ) %>%
+          hc_tooltip(
+            shared = TRUE,
+            formatter = JS(
+              "function () {
       let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
       this.points.forEach(function (point) {
         tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
@@ -1555,59 +1599,129 @@ server <- function(input, output, session) {
       });
       return tooltip;
     }"
-        )
-      ) %>%
-      hc_plotOptions(
-        line = list(
-          dataLabels = list(enabled = FALSE),
-          marker = list(enabled = FALSE, symbol = "circle") # Marker für Linien entfernen
-        ),
-        column = list(pointPadding = 0.2) # pointPadding gesetzt, dataLabels entfernt
-      )
-    
-    # Hinzufügen der Serien
-    for (jahr in rev(unique(data$Datum_Jahr))) {
-      jahr_data <- data %>% filter(Datum_Jahr == jahr)
-      
+            )
+          ) %>%
+          hc_plotOptions(
+            column = list(
+              dataLabels = list(
+                enabled = TRUE,
+                formatter = JS(
+                  "function () {
+          return this.y.toFixed(1).toString().replace('.', ',') + '%';
+        }"
+                ),
+                style = list(
+                  color = "#333333",
+                  fontSize = "12px",
+                  fontWeight = "bold"
+                )
+              )
+            ),
+            column = list(pointPadding = 0)
+          ) %>%
+          hc_add_series(
+            data = data,
+            type = "column",
+            hcaes(x = as.character(Monat_Jahr), y = Zimmerauslastung),
+            color = '#2a9749',
+            name = "Zimmerauslastung"
+          ) %>%
+          hc_colors(colors_plots) %>%
+          hc_credits(enabled = TRUE,     
+                     style = list(
+                       fontSize = "11px"),
+                     text = paste0("Quelle: ", quelle)) %>%
+          hc_exporting(enabled = TRUE) %>%
+          hc_add_theme(stata_theme)
+        
+      } else {
+        hc <- highchart() %>%
+          hc_chart(type = "line") %>%
+          # hc_size(836) %>%
+          hc_xAxis(categories = month_mapping_short[unique_months]) %>%
+          hc_yAxis(
+            labels = list(format = "{value}%"),
+            min = 0,
+            max = 100
+          ) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = TRUE
+          ) %>%
+          hc_tooltip(
+            shared = TRUE,
+            formatter = JS(
+              "function () {
+      let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+      this.points.forEach(function (point) {
+        tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                  + point.series.name + ': <b>'
+                  + point.y.toFixed(1).toString().replace('.', ',') + '%' + '</b><br>';
+      });
+      return tooltip;
+    }"
+            )
+          ) %>%
+          hc_plotOptions(
+            line = list(
+              dataLabels = list(enabled = FALSE),
+              marker = list(enabled = FALSE, symbol = "circle")
+            ),
+            column = list(pointPadding = 0)
+          )
+        
+        # Serien nach Jahr hinzufügen
+        for (jahr in sort(unique(data$Datum_Jahr))) {
+          jahr_data <- data %>% filter(Datum_Jahr == jahr)
+          hc <- hc %>%
+            hc_add_series(
+              data = jahr_data,
+              type = "line",
+              hcaes(x = Monat, y = Zimmerauslastung),
+              name = as.character(jahr)
+            )
+        }
+        
+      } 
       hc <- hc %>%
-        hc_add_series(
-          jahr_data,
-          type = chart_type,
-          hcaes(x = Monat, y = Zimmerauslastung),
-          name = as.character(jahr),
-          marker = list(enabled = (group_counts %>% filter(Datum_Jahr == jahr) %>% pull(count) == 1), symbol = "circle")
-        )
+        hc_colors(colors_plots) %>%
+        hc_credits(enabled = TRUE,     
+                   style = list(
+                     fontSize = "11px"),
+                   text = paste0("Quelle: ", quelle)) %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_add_theme(stata_theme)
     }
     
-    hc <- hc %>%
-      hc_colors(colors_plots) %>%
-      hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
-      hc_exporting(enabled = TRUE) %>%
-      hc_add_theme(stata_theme)
+    hc
+  })
+  
+  output$dynamic_month_plot2 <- renderUI({
+    if (length(input$monat) == 1) {
+      layout_columns(
+        col_widths=c(6,6),
+      highchartOutput("linePlot2_Monat") %>% withSpinner(color="#2a9749"))
+    } else {
+      layout_columns(
+      highchartOutput("linePlot2_Monat") %>% withSpinner(color="#2a9749"))
+    }
   })
   
   # Line Plot 1 Tag:
   output$linePlot1_Tag <- renderHighchart({
-    
     data <- data_tag_aufenthalt() %>%
       mutate(
-        Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format="%m-%d"), "%e. %b")
+        Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format="%m-%d"), "%e. %b"),
+        Tag_Jahr = paste(Datum_Monat_Tag, Datum_Jahr)
       )
     
-    # Prüfen, ob nur ein Tag ausgewählt ist
     unique_days <- unique(data$Datum_Monat_Tag)
     is_single_day <- length(unique_days) == 1
-    
-    # Diagrammtyp dynamisch setzen
-    chart_type <- if (is_single_day) "column" else "line"
-    
-    # Kategorien für x-Achse vorbereiten
     categories <- unique(data$Datum_Monat_Tag)
-    
-    # Mapping von Kategorie zu Index
     category_indices <- setNames(0:(length(categories) - 1), categories)
     
-    # PlotBands für Events vorbereiten (ein Band pro Event über mehrere Tage)
     event_ranges <- data %>%
       filter(!is.na(Event) & Event != "") %>%
       group_by(Event) %>%
@@ -1618,99 +1732,133 @@ server <- function(input, output, session) {
       ) %>%
       distinct()
     
-    if (nrow(event_ranges) == 0) {
-      return(NULL)  # No events to plot
+    plot_bands <- list()
+    if (nrow(event_ranges) > 0) {
+      plot_bands <- lapply(1:nrow(event_ranges), function(i) {
+        start_idx <- category_indices[[event_ranges$start_day[i]]]
+        end_idx <- category_indices[[event_ranges$end_day[i]]]
+        if (is.na(start_idx) || is.na(end_idx)) return(NULL)
+        list(
+          from = start_idx - 0.4,
+          to = end_idx + 0.4,
+          color = "rgba(200,200,200,0.3)",
+          label = list(
+            text = event_ranges$Event[i],
+            rotation = -90,
+            align = "left",
+            verticalAlign = "bottom",
+            x = 12,
+            y = -5,
+            style = list(color = "#606060", fontSize = "10px")
+          )
+        )
+      })
+      plot_bands <- Filter(Negate(is.null), plot_bands)
     }
     
-    plot_bands <- lapply(1:nrow(event_ranges), function(i) {
-      start_idx <- category_indices[[event_ranges$start_day[i]]]
-      end_idx   <- category_indices[[event_ranges$end_day[i]]]
+    if (input$kat_aufenthalt_tag %in% c("Ankünfte", "Logiernächte")) {
+      if (is_single_day) {
+        hc <- highchart() %>%
+          hc_chart(type = "column") %>%
+          # hc_size(560) %>%
+          hc_xAxis(categories = data$Tag_Jahr) %>%
+          hc_yAxis(visible = FALSE) %>%
+          hc_legend(enabled = FALSE) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            column = list(
+              dataLabels = list(
+                enabled = TRUE,
+                style = list(
+                  color = "#333333",
+                  fontSize = "12px",
+                  fontWeight = "bold"
+                )
+              )
+            ),
+            column = list(pointPadding = 0)
+          ) %>%
+          hc_add_series(
+            data = data,
+            type = "column",
+            hcaes(x = as.character(Tag_Jahr), y = .data[[paste("Anzahl", input$kat_aufenthalt_tag)]]),
+            color = '#2a9749',
+            name = input$kat_aufenthalt_tag
+          )
+      } else {
+        hc <- highchart() %>%
+          hc_chart(type = "line") %>%
+          # hc_size(836) %>%
+          hc_xAxis(
+            categories = categories,
+            plotBands = if (length(plot_bands) > 0) plot_bands else NULL
+          ) %>%
+          hc_legend(
+            layout = 'horizontal',
+            align = 'left',
+            verticalAlign = 'top',
+            enabled = T
+          ) %>%
+          hc_tooltip(shared = TRUE) %>%
+          hc_plotOptions(
+            line = list(
+              dataLabels = list(enabled = FALSE),
+              marker = list(enabled = FALSE, symbol = "circle")
+            ),
+            column = list(pointPadding = 0)
+          )
+        
+        for (jahr in sort(unique(data$Datum_Jahr))) {
+          jahr_data <- data %>% filter(Datum_Jahr == jahr)
+          hc <- hc %>%
+            hc_add_series(
+              data = jahr_data,
+              type = "line",
+              hcaes(x = Datum_Monat_Tag, y = .data[[paste("Anzahl", input$kat_aufenthalt_tag)]]),
+              name = as.character(jahr)
+            )
+        }
+      }
       
-      if (is.na(start_idx) || is.na(end_idx)) return(NULL)
-      
-      list(
-        from = start_idx - 0.4,
-        to   = end_idx + 0.4,
-        color = "rgba(200,200,200,0.3)",
-        label = list(
-          text = event_ranges$Event[i],
-          rotation = -90,
-          align = "left",
-          verticalAlign = "bottom",     # move anchor to top
-          x = 12,
-          y = -5,                    # slight shift downward (higher position visually)
-          style = list(color = "#606060", fontSize = "10px")
-        )
-      )
-    })
-    
-    plot_bands <- Filter(Negate(is.null), plot_bands)  # remove NULLs
-    
-    hc <- highchart() %>%
-      hc_chart(type = chart_type) %>%
-      hc_xAxis(
-        categories = categories,
-        plotBands = if (!is_single_day) plot_bands else NULL
-      ) %>%
-      hc_legend(
-        layout = 'horizontal',
-        align = 'left',
-        verticalAlign = 'top',
-        enabled = TRUE
-      ) %>%
-      hc_tooltip(shared = TRUE) %>%
-      hc_plotOptions(
-        line = list(
-          dataLabels = list(enabled = FALSE),
-          marker = list(enabled = FALSE, symbol = "circle")
-        ),
-        column = list(pointPadding = 0.2)
-      )
-    
-    # Hinzufügen der Serien
-    for (jahr in unique(data$Datum_Jahr)) {
-      jahr_data <- data %>% filter(Datum_Jahr == jahr)
-      
-      hc <- hc %>%
-        hc_add_series(
-          jahr_data,
-          type = chart_type,
-          hcaes(x = Datum_Monat_Tag, y = `Anzahl Logiernächte`), 
-          name = as.character(jahr)
-        )
     }
     
+    # Common styling and final touches
     hc <- hc %>%
       hc_colors(colors_plots) %>%
-      hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
+      hc_credits(enabled = TRUE, style = list(fontSize = "11px"), text = paste0("Quelle: ", quelle)) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
     
     hc
   })
   
+  output$dynamic_day_plot1 <- renderUI({
+    if (input$startDate_tag == input$endDate_tag) {
+      layout_columns(
+        col_widths=c(6,6),
+      highchartOutput("linePlot1_Tag") %>% withSpinner(color="#2a9749"))
+    } else {
+      layout_columns(
+      highchartOutput("linePlot1_Tag") %>% withSpinner(color="#2a9749"))
+    }
+  })
+  
   # Line Plot 2 Tag:
   output$linePlot2_Tag <- renderHighchart({
-    # Daten vorab filtern und Gruppengröße berechnen
     data <- data_tag_zimmer() %>%
       mutate(
-        Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format="%m-%d"), "%e. %b")
+        Datum_Monat_Tag = format(as.Date(Datum_Monat_Tag, format = "%m-%d"), "%e. %b"),
+        Tag_Jahr = paste(Datum_Monat_Tag, Datum_Jahr),
+        `Anzahl verfügbare Zimmer` = round(`Anzahl verfügbare Zimmer`, 0),
+        `Anzahl belegte Zimmer` = round(`Anzahl belegte Zimmer`, 0)
       )
     
-    # Überprüfen, ob nur ein Tag ausgewählt ist
     unique_days <- unique(data$Datum_Monat_Tag)
     is_single_day <- length(unique_days) == 1
-    
-    # Dynamischen Diagrammtyp festlegen
-    chart_type <- ifelse(is_single_day, "column", "line")
-    
-    # Kategorien für x-Achse vorbereiten
     categories <- unique(data$Datum_Monat_Tag)
-    
-    # Mapping von Kategorie zu Index
     category_indices <- setNames(0:(length(categories) - 1), categories)
     
-    # PlotBands für Events vorbereiten (optional, falls es Eventdaten gibt)
+    # PlotBands for Events
     event_ranges <- data %>%
       filter(!is.na(Event) & Event != "") %>%
       group_by(Event) %>%
@@ -1721,52 +1869,40 @@ server <- function(input, output, session) {
       ) %>%
       distinct()
     
-    plot_bands <- lapply(1:nrow(event_ranges), function(i) {
-      start_idx <- category_indices[[event_ranges$start_day[i]]]
-      end_idx   <- category_indices[[event_ranges$end_day[i]]]
-      
-      if (is.na(start_idx) || is.na(end_idx)) return(NULL)
-      
-      list(
-        from = start_idx - 0.4,
-        to   = end_idx + 0.4,
-        color = "rgba(200,200,200,0.3)",
-        label = list(
-          text = event_ranges$Event[i],
-          rotation = -90,
-          align = "left",
-          verticalAlign = "bottom",     # move anchor to top
-          x = 12,
-          y = -5,                    # slight shift downward (higher position visually)
-          style = list(color = "#606060", fontSize = "10px")
+    plot_bands <- list()
+    if (nrow(event_ranges) > 0) {
+      plot_bands <- lapply(1:nrow(event_ranges), function(i) {
+        start_idx <- category_indices[[event_ranges$start_day[i]]]
+        end_idx <- category_indices[[event_ranges$end_day[i]]]
+        if (is.na(start_idx) || is.na(end_idx)) return(NULL)
+        list(
+          from = start_idx - 0.4,
+          to = end_idx + 0.4,
+          color = "rgba(200,200,200,0.3)",
+          label = list(
+            text = event_ranges$Event[i],
+            rotation = -90,
+            align = "left",
+            verticalAlign = "bottom",
+            x = 12,
+            y = -5,
+            style = list(color = "#606060", fontSize = "10px")
+          )
         )
-      )
-    })
+      })
+      plot_bands <- Filter(Negate(is.null), plot_bands)
+    }
     
-    plot_bands <- Filter(Negate(is.null), plot_bands)  # remove NULLs
+    # Dynamic y-variable
+    y_var <- switch(
+      input$kat_zimmer_tag,
+      "Verfügbare Zimmer" = "Anzahl verfügbare Zimmer",
+      "Belegte Zimmer" = "Anzahl belegte Zimmer",
+      "Zimmerauslastung" = "Zimmerauslastung"
+    )
     
-    # Highchart Erstellung
-    hc <- highchart() %>%
-      hc_chart(type = chart_type) %>%
-      hc_xAxis(
-        categories = categories,
-        plotBands = if (!is_single_day) plot_bands else NULL
-      ) %>%
-      hc_yAxis(
-        labels = list(format = "{value}%"),
-        min = 0,
-        max = 100
-      ) %>%
-      hc_legend(
-        layout = 'horizontal',
-        align = 'left',
-        verticalAlign = 'top',
-        enabled = TRUE
-      ) %>%
-      hc_tooltip(
-        shared = TRUE,
-        formatter = JS(
-          "function () {
+    tooltip_formatter <- if (input$kat_zimmer_tag == "Zimmerauslastung") {
+      JS("function () {
         let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
         this.points.forEach(function (point) {
           tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
@@ -1774,38 +1910,101 @@ server <- function(input, output, session) {
                     + point.y.toFixed(1).toString().replace('.', ',') + '%' + '</b><br>';
         });
         return tooltip;
-      }"
-        )
-      ) %>%
-      hc_plotOptions(
-        series = list(
-          marker = list(enabled = FALSE, symbol = "circle")  # Marker deaktivieren
-        ),
-        column = list(pointPadding = 0.2)
-      )
+      }")
+    } 
     
-    # Hinzufügen der Serien
-    for (jahr in unique(data$Datum_Jahr)) {
-      jahr_data <- data %>% filter(Datum_Jahr == jahr)
-      
-      hc <- hc %>%
+    if (is_single_day) {
+      hc <- highchart() %>%
+        hc_chart(type = "column") %>%
+        # hc_size(560) %>%
+        hc_xAxis(categories = data$Tag_Jahr) %>%
+        hc_yAxis(visible = FALSE) %>%
+        hc_legend(enabled = FALSE) %>%
+        hc_tooltip(shared = TRUE, formatter = tooltip_formatter) %>%
+        hc_plotOptions(
+          column = list(
+            dataLabels = list(
+              enabled = TRUE,
+              formatter = JS(
+                "function () {
+          if (this.series.name === 'Zimmerauslastung') {
+            return this.y.toFixed(1).replace('.', ',') + '%';
+          } else {
+            return Highcharts.numberFormat(this.y, 0, '.', ' ');
+          }
+        }"
+              ),
+              style = list(
+                color = "#333333",
+                fontSize = "12px",
+                fontWeight = "bold"
+              )
+            )
+          ),
+          column = list(pointPadding = 0)
+        ) %>%
         hc_add_series(
-          jahr_data,
-          type = chart_type,
-          hcaes(x = Datum_Monat_Tag, y = Zimmerauslastung),
-          name = as.character(jahr)
+          data = data,
+          type = "column",
+          hcaes(x = as.character(Datum_Monat_Tag), y = .data[[y_var]]),
+          color = '#2a9749',
+          name = input$kat_zimmer_tag
         )
+    } else {
+      hc <- highchart() %>%
+        hc_chart(type = "line") %>%
+        # hc_size(836) %>%
+        hc_xAxis(categories = categories, plotBands = plot_bands) %>%
+        hc_yAxis(
+          labels = if (input$kat_zimmer_tag == "Zimmerauslastung") list(format = "{value}%") else NULL,
+          min = if (input$kat_zimmer_tag == "Zimmerauslastung") 0 else NULL,
+          max = if (input$kat_zimmer_tag == "Zimmerauslastung") 100 else NULL
+        ) %>%
+        hc_legend(
+          layout = 'horizontal',
+          align = 'left',
+          verticalAlign = 'top',
+          enabled = T
+        ) %>%
+        hc_tooltip(shared = TRUE, formatter = tooltip_formatter) %>%
+        hc_plotOptions(
+          line = list(
+            dataLabels = list(enabled = FALSE),
+            marker = list(enabled = FALSE, symbol = "circle")
+          ),
+          column = list(pointPadding = 0)
+        )
+      
+      for (jahr in sort(unique(data$Datum_Jahr))) {
+        jahr_data <- data %>% filter(Datum_Jahr == jahr)
+        hc <- hc %>%
+          hc_add_series(
+            jahr_data,
+            type = "line",
+            hcaes(x = Datum_Monat_Tag, y = .data[[y_var]]),
+            name = as.character(jahr)
+          )
+      }
     }
     
-    hc <- hc %>%
+    hc %>%
       hc_colors(colors_plots) %>%
-      hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
+      hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle), style = list(fontSize = "11px")) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
-    
-    hc
-  })  
+  })
   
+  output$dynamic_day_plot2 <- renderUI({
+    if (input$startDate_tag == input$endDate_tag) {
+      layout_columns(
+        col_widths=c(6,6),
+      highchartOutput("linePlot2_Tag") %>% withSpinner(color="#2a9749"))
+    } else {
+      layout_columns(
+      highchartOutput("linePlot2_Tag") %>% withSpinner(color="#2a9749"))
+    }
+  })
+
   # Data table 1:
   output$dataTable1_Monat <- renderDT( {
     # Extract and format selected month range
@@ -1821,22 +2020,23 @@ server <- function(input, output, session) {
       file_suffix <- paste0(startDate)
     }
     
-    datatable(style = "default",
+    datatable(
       monat_aufenthalt_table(),
       extensions = 'Buttons',
       rownames = FALSE,
       options = list(
-        pageLength = 12,
+        paging = FALSE,
+        scrollY = "500px",
+        scrollCollapse = TRUE,
         lengthChange = FALSE,
         searching = FALSE,
         info = FALSE,
-        paging = TRUE,
         dom = 'frtBip',
         buttons = list(
           list(
             extend = 'csv',
             # text = '<i class="fa-solid fa-download"></i> csv',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " csv")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " csv")),
             filename = paste0("Aufenthalt_nach_Monat_", file_suffix),
             exportOptions = list(
               modifier = list(page = 'all'),  # Export all data, not just the current page
@@ -1850,7 +2050,7 @@ server <- function(input, output, session) {
           list(
             extend = 'excel',
             # text = '<i class="fa-solid fa-download"></i> xlsx',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " xlsx")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " xlsx")),
             filename = paste0("Aufenthalt_nach_Monat_", file_suffix),
             exportOptions = list(
               modifier = list(page = 'all'),  # Export all data, not just the current page
@@ -1863,7 +2063,8 @@ server <- function(input, output, session) {
           )
         ),
         columnDefs = list(
-          list(visible = FALSE, targets = c(2,3))
+          list(visible = FALSE, targets = c(2,3)),
+          list(className = 'dt-left', targets = 0)  # Erste Spalte linksbündig
         )
       )
       # , filter = 'top'  # Enables column filters
@@ -1872,6 +2073,10 @@ server <- function(input, output, session) {
       formatStyle(
         columns = c('Anzahl Ankünfte', 'Anzahl Logiernächte', 'Aufenthaltsdauer (in Tagen)'),
         `text-align` = 'right'
+      ) %>%
+      formatStyle(
+        columns = c('Jahr'),
+        `text-align` = 'left'
       ) %>%
       formatCurrency(
         columns = c('Anzahl Ankünfte', 'Anzahl Logiernächte'),
@@ -1905,22 +2110,23 @@ server <- function(input, output, session) {
       file_suffix <- paste0(startDate)
     }
     
-    datatable(style = "default",
+    datatable(
       monat_zimmer_table(),
       extensions = 'Buttons',
       rownames = FALSE,
       options = list(
-        pageLength = 12,
+        paging = FALSE,
+        scrollY = "500px",
+        scrollCollapse = TRUE,
         lengthChange = FALSE,
         searching = FALSE,
         info = FALSE,
-        paging = TRUE,
         dom = 'frtBip',
         buttons = list(
           list(
             extend = 'csv',
             # text = '<i class="fa-solid fa-download"></i> csv',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " csv")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " csv")),
             filename = paste0("Zimmer_nach_Monat_", file_suffix),
             exportOptions = list(
               modifier = list(page = 'all'),  # Export all data, not just the current page
@@ -1934,7 +2140,7 @@ server <- function(input, output, session) {
           list(
             extend = 'excel',
             # text = '<i class="fa-solid fa-download"></i> xlsx',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " xlsx")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " xlsx")),
             filename = paste0("Zimmer_nach_Monat_", file_suffix),
             exportOptions = list(
               modifier = list(page = 'all'),  # Export all data, not just the current page
@@ -1947,7 +2153,8 @@ server <- function(input, output, session) {
           )
         ),
         columnDefs = list(
-          list(visible = FALSE, targets = c(2))
+          list(visible = FALSE, targets = c(2)),
+          list(className = 'dt-left', targets = 0) 
         )
       )
       # ,
@@ -1977,21 +2184,23 @@ server <- function(input, output, session) {
   
   # Data table 3:
   output$dataTable1_Tag <- renderDT({
-    datatable(style = "default",
+    datatable(
       tag_aufenthalt_table(),
       extensions = 'Buttons',
       rownames = FALSE,
       options = list(
-        pageLength = 12,
+        paging = FALSE,
+        scrollY = "500px",
+        scrollCollapse = TRUE,
         lengthChange = FALSE,
         searching = F,
         info = FALSE,
-        paging = T,
+        # paging = T,
         dom = 'frtBip',
         buttons = list(
           list(            
             extend = 'csv',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " csv")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " csv")),
             filename = paste0(
               "Aufenthalt nach Tag_",
               input$startDate_tag,
@@ -2009,7 +2218,7 @@ server <- function(input, output, session) {
           ),
           list(
             extend = 'excel',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " xlsx")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " xlsx")),
             filename = paste0(
               "Aufenthalt nach Tag_",
               input$startDate_tag,
@@ -2028,7 +2237,8 @@ server <- function(input, output, session) {
         ),
         columnDefs = list(
           list(visible = FALSE, targets = c(1,2)),
-          list(width = "100px", targets = 0)
+          list(width = "100px", targets = 0),
+          list(className = 'dt-left', targets = 0) 
         )
       )
     ) %>%
@@ -2045,22 +2255,23 @@ server <- function(input, output, session) {
   
   # Data table 4:
   output$dataTable2_Tag <- renderDT({
-    datatable(style = "default",
+    datatable(
       tag_zimmer_table(),
       extensions = 'Buttons',
       rownames = FALSE,
       options = list(
-        pageLength = 12,
+        paging = FALSE,
+        scrollY = "500px",
+        scrollCollapse = TRUE,
         lengthChange = FALSE,
         searching = F,
         info = FALSE,
-        paging = T,
         dom = 'frtBip',
         buttons = list(
           list(
             extend = 'csv',
             # text = '<i class="fa-solid fa-download"></i> csv',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " csv")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " csv")),
             filename = paste0(
               "Zimmer nach Tag_",
               input$startDate_tag,
@@ -2079,7 +2290,7 @@ server <- function(input, output, session) {
           list(
             extend = 'excel',
             # text = '<i class="fa-solid fa-download"></i> xlsx',
-            text = HTML(paste0(bs_icon("download", lib = "font-awesome"), " xlsx")),
+            text = HTML(paste0(img(src = "download.svg", class = "hover-icon"), " xlsx")),
             filename = paste0(
               "Zimmer nach Tag_",
               input$startDate_tag,
@@ -2098,7 +2309,8 @@ server <- function(input, output, session) {
         ),
         columnDefs = list(
           list(visible = FALSE, targets = c(1)),
-          list(width = "100px", targets = 0)
+          list(width = "100px", targets = 0),
+          list(className = 'dt-left', targets = 0) 
         )
       )
       # ,
@@ -2130,41 +2342,6 @@ server <- function(input, output, session) {
   
   # Infotab:
   output$info_text <- renderUI({
-    tagList(
-      tags$style(HTML("
-      .accordion-button {
-        background-color: #f8f9fa !important;
-        color: #333 !important;
-        font-weight: bold;
-        border: none;
-        box-shadow: none;
-        transition: all 0.3s ease-in-out;
-      }
-      
-      .accordion-button:hover {
-        background-color: #e2e6ea !important;
-        color: #000 !important;
-      }
-      
-      .accordion-button:not(.collapsed) {
-        background-color: #d1d8e0 !important;
-        color: #333 !important;
-      }
-
-      .accordion-body {
-        background-color: #ffffff;
-        color: #555;
-        font-size: 14px;
-        padding: 15px;
-        border-top: 1px solid #ddd;
-      }
-
-      .accordion {
-        border-radius: 10px;
-        overflow: hidden;
-      }
-    ")),
-      
       accordion(
         id = "info_accordion",
         open = FALSE,
@@ -2207,7 +2384,7 @@ server <- function(input, output, session) {
         accordion_panel("Herkunftsland",
                         "Land des ständigen Wohnsitzes der Gäste.")
       )
-    )
+    
   })
   
   
