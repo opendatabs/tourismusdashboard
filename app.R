@@ -4,22 +4,22 @@
 
 ###Preliminaries: ####
 # Remove all objects from the global environment
-rm(list = ls())
+# rm(list = ls())
   
 # load packages:
 library(dplyr)
 library(DT)
 library(lubridate)
 library(tidyr)
-library(janitor)
+# library(janitor)
 library(shiny)
-library(shinydashboard)
-library(stringr)
+# library(shinydashboard)
+# library(stringr)
 library(highcharter)
 library(bslib)
-library(jsonlite)
-library(httr)
-library(data.table)
+# library(jsonlite)
+# library(httr)
+# library(data.table)
 library(bsicons)
 library(shinyWidgets)
 library(shinycssloaders)
@@ -29,13 +29,6 @@ conflicted::conflict_prefer("filter", "dplyr")
 conflicted::conflict_prefer("month", "lubridate")
 
 source("app_functions.R")
-
-# Daten als csv laden:
-# tourismus_taeglich_1 <- read.csv("data/tourismus_taeglich_1.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
-#   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
-# 
-# tourismus_taeglich_2 <- read.csv("data/tourismus_taeglich_2.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
-#   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
 
 tourismus_taeglich_1 <- readRDS("data/tourismus_taeglich_1.rds") %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
@@ -62,19 +55,12 @@ ui <- page_navbar(
     primary = "#1e6d8b",
     secondary = "white"
   ),
+  
   bg = "#ddecde",
   underline = FALSE,
   header = tags$head(
                      tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
-                     tags$link(href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap", rel = "stylesheet"),
-
-    tags$script(HTML("
-      function sendWidth() {
-        Shiny.setInputValue('window_width', window.innerWidth);
-      }
-      window.addEventListener('resize', sendWidth);
-      window.addEventListener('load', sendWidth);
-    "))
+                     tags$link(href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap", rel = "stylesheet")
   ),
   # 
   # footer = tags$footer(
@@ -207,90 +193,98 @@ ui <- page_navbar(
     "Tag",
     h1("Tourismuszahlen Basel-Stadt"),
     uiOutput("dynamic_subtitle2"),
-    div(
-      class = "full-width-div",
-      div(
-        class = "full-width-inner",
+    
     page_fluid(
-      layout_columns(
-          dateInput(
-            "startDate_tag",
-            HTML(paste0(bs_icon("calendar3-week"), " Startdatum")),
-            value = as.Date(paste0(JJJJ, "-", MM, "-01")),
-            min = "2024-01-01",
-            max = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
-            datesdisabled = "2024-02-29",
-            autoclose = TRUE,
-            language = "de",
+      div(
+        class = "full-width-div",
+        div(
+          class = "full-width-inner",
+          layout_columns(
+            dateInput(
+              "startDate_tag",
+              HTML(paste0(bs_icon("calendar3-week"), " Startdatum")),
+              value = as.Date(paste0(JJJJ, "-", MM, "-01")),
+              min = "2024-01-01",
+              max = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
+              datesdisabled = "2024-02-29",
+              autoclose = TRUE,
+              language = "de"
+            ),
+            dateInput(
+              "endDate_tag",
+              HTML(paste0(bs_icon("calendar3-week"), " Enddatum")),
+              value = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
+              min = "2024-01-01",
+              max = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
+              datesdisabled = "2024-02-29",
+              autoclose = TRUE,
+              language = "de"
+            ),
+            selectInput(
+              "hotelkategorie_tag",
+              HTML(paste0(bs_icon("house"), " Hotelkategorie")),
+              choices = c("Total", setdiff(unique(tourismus_taeglich_1$Hotelkategorie), "Total")),
+              selected = "Total"
+            ),
+            uiOutput("herkunft_ui_tag")
+          )
+        )
+      ),
+      
+      navset_underline(
+        id = "tagtabs",
+        
+        nav_panel(
+          "Aufenthalt",
+          layout_columns(
+            uiOutput("Logiernaechte_Tag"),
+            uiOutput("Ankuenfte_Tag"),
+            uiOutput("Aufenthaltsdauer_Tag")
           ),
-          dateInput(
-            "endDate_tag",
-            HTML(paste0(bs_icon("calendar3-week"), " Enddatum")),
-            value = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
-            min = "2024-01-01",
-            max = as.Date(paste0(JJJJ, "-", MM, "-", DD)),
-            datesdisabled = "2024-02-29",
-            autoclose = TRUE,
-            language = "de",
+          
+          page_fluid(
+            h4("Tourismuszahlen nach Tag"),
+            radioButtons(
+              inline = TRUE,
+              inputId = "kat_aufenthalt_tag",
+              label = NULL,
+              choices = c("Logiernächte", "Ankünfte"),
+              selected = "Logiernächte"
+            ),
+            uiOutput("dynamic_day_plot1")
           ),
-          selectInput(
-                           "hotelkategorie_tag",
-                           HTML(paste0(bs_icon("house"), " Hotelkategorie")),
-                           choices = c("Total", setdiff(unique(tourismus_taeglich_1$Hotelkategorie), "Total")),
-                           selected = "Total"
-                         ),
-          uiOutput("herkunft_ui_tag")
-      )
-    ))
+          
+          layout_columns(
+            DTOutput("dataTable1_Tag", height = 500) %>% withSpinner(color = "#2a9749")
+          )
         ),
-        navset_underline(id = "tagtabs",
-                         nav_panel(
-                           "Aufenthalt", 
-                           layout_columns(
-                             uiOutput("Logiernaechte_Tag"),
-                             uiOutput("Ankuenfte_Tag"),
-                             uiOutput("Aufenthaltsdauer_Tag")
-                           ),
-               
-                           page_fluid(
-                             h4("Tourismuszahlen nach Tag"),
-                             radioButtons(
-                               inline = TRUE,
-                               inputId = "kat_aufenthalt_tag",
-                               label = NULL,
-                               choices = c("Logiernächte", "Ankünfte"),
-                               selected = "Logiernächte"
-                             ),
-                               uiOutput("dynamic_day_plot1")
-                           ),
-                           layout_columns(
-                               DTOutput("dataTable1_Tag",  height = 500) %>% withSpinner(color="#2a9749")
-                           )
-                         ),
-                         nav_panel(
-                           "Zimmer", 
-                           layout_columns(
-                             uiOutput("verfuegbareZimmer_Tag"),
-                             uiOutput("belegteZimmer_Tag"),
-                             uiOutput("Zimmerauslastung_Tag")
-                           ),
-                           
-                           page_fluid(
-                             h4("Tourismuszahlen nach Tag"),
-                             radioButtons(
-                               inline = TRUE,
-                               inputId = "kat_zimmer_tag",
-                               label = NULL,
-                               choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
-                               selected = "Verfügbare Zimmer"
-                             ),
-                               uiOutput("dynamic_day_plot2")
-                           ),
-                           layout_columns(
-                               DTOutput("dataTable2_Tag", height = 500) %>% withSpinner(color="#2a9749")
-                           )
-                         )
+        
+        nav_panel(
+          "Zimmer",
+          layout_columns(
+            uiOutput("verfuegbareZimmer_Tag"),
+            uiOutput("belegteZimmer_Tag"),
+            uiOutput("Zimmerauslastung_Tag")
+          ),
+          
+          page_fluid(
+            h4("Tourismuszahlen nach Tag"),
+            radioButtons(
+              inline = TRUE,
+              inputId = "kat_zimmer_tag",
+              label = NULL,
+              choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
+              selected = "Verfügbare Zimmer"
+            ),
+            uiOutput("dynamic_day_plot2")
+          ),
+          
+          layout_columns(
+            DTOutput("dataTable2_Tag", height = 500) %>% withSpinner(color = "#2a9749")
+          )
+        )
       )
+    )
   ),
   
   nav_panel(
@@ -377,7 +371,7 @@ server <- function(input, output, session) {
   reactive_value_text2 <- reactive({
     req(input$startDate_tag, input$endDate_tag, input$window_width)
     
-    date_format <- ifelse(input$window_width < 768, "%e. %b %y", "%e. %B %Y")
+    date_format <-  "%e. %B %Y"
     
     start_date <- format(input$startDate_tag, date_format)
     end_date <- format(input$endDate_tag, date_format)
@@ -933,8 +927,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(newest_month_all_hotels_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = tagList(p("Ankünfte", style = "font-weight: bold;"),
-                                       p("aufsummiert", style = "font-size: 0.7em;")),
+      label = tagList(p("Ankünfte", class = "value-box-headline"),
+                                       p("aufsummiert", class = "value-box-subline")),
     )
   })
   
@@ -945,8 +939,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(newest_month_all_hotels_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = tagList(p("Logiernächte", style = "font-weight: bold;"),
-                      p("aufsummiert", style = "font-size: 0.7em;")),
+      label = tagList(p("Logiernächte", class = "value-box-headline"),
+                      p("aufsummiert", class = "value-box-subline")),
     )
   })
   
@@ -957,8 +951,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(newest_month_all_hotels_past()$`Anzahl Logiernächte`) / sum(newest_month_all_hotels_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Aufenthaltsdauer", class = "value-box-headline"),
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = " Tage",
     )
   })
@@ -970,8 +964,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(newest_month_all_hotels_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Verfügbare Zimmer", class = "value-box-headline"),
+                      p("durchschnittlich", class = "value-box-subline")),
     )
   })
   
@@ -982,8 +976,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(newest_month_all_hotels_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Belegte Zimmer", class = "value-box-headline"),
+                      p("durchschnittlich", class = "value-box-subline")),
     )
   })
   
@@ -994,8 +988,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(newest_month_all_hotels_past()$`Anzahl belegte Zimmer`) / sum(newest_month_all_hotels_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Zimmerauslastung", class = "value-box-headline"),
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = "%",
       unit_change = "PP"
     )
@@ -1009,8 +1003,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_monat_aufenthalt_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = tagList(p("Ankünfte", style = "font-weight: bold;"),                                        
-                      p("aufsummiert", style = "font-size: 0.7em;"))
+      label = tagList(p("Ankünfte", class = "value-box-headline"),                                        
+                      p("aufsummiert", class = "value-box-subline"))
     )
   })
   
@@ -1021,8 +1015,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_monat_aufenthalt_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = tagList(p("Logiernächte", style = "font-weight: bold;"),                                        
-                      p("aufsummiert", style = "font-size: 0.7em;"))
+      label = tagList(p("Logiernächte", class = "value-box-headline"),                                        
+                      p("aufsummiert", class = "value-box-subline"))
     )
   })
   
@@ -1049,8 +1043,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(val_box_monat_aufenthalt_past()$`Anzahl Logiernächte`) / sum(val_box_monat_aufenthalt_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Aufenthaltsdauer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = " Tage"
     )
   })
@@ -1062,8 +1056,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_monat_zimmer_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Verfügbare Zimmer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
     )
   })
   
@@ -1074,8 +1068,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_monat_zimmer_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Belegte Zimmer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
     )
   })
   
@@ -1086,8 +1080,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(val_box_monat_zimmer_past()$`Anzahl belegte Zimmer`) / sum(val_box_monat_zimmer_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Zimmerauslastung", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = "%",
       unit_change = "PP"
     )
@@ -1101,8 +1095,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_tag_aufenthalt_past()$`Anzahl Ankünfte`),
       previous_data_digits = 0,
-      label = tagList(p("Ankünfte", style = "font-weight: bold;"),                                        
-                      p("aufsummiert", style = "font-size: 0.7em;"))
+      label = tagList(p("Ankünfte", class = "value-box-headline"),                                        
+                      p("aufsummiert", class = "value-box-subline"))
     )
   })
   
@@ -1113,8 +1107,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = sum(val_box_tag_aufenthalt_past()$`Anzahl Logiernächte`),
       previous_data_digits = 0,
-      label = tagList(p("Logiernächte", style = "font-weight: bold;"),                                        
-                      p("aufsummiert", style = "font-size: 0.7em;"))
+      label = tagList(p("Logiernächte", class = "value-box-headline"),                                        
+                      p("aufsummiert", class = "value-box-subline"))
     )
   })
   
@@ -1125,8 +1119,8 @@ server <- function(input, output, session) {
       current_data_digits = 2,
       previous_data = mean(sum(val_box_tag_aufenthalt_past()$`Anzahl Logiernächte`) / sum(val_box_tag_aufenthalt_past()$`Anzahl Ankünfte`)),
       previous_data_digits = 2,
-      label = tagList(p("Aufenthaltsdauer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Aufenthaltsdauer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = " Tage"
     )
   })
@@ -1138,8 +1132,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_tag_zimmer_past()$`Anzahl verfügbare Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Verfügbare Zimmer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Verfügbare Zimmer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
     )
     
   })
@@ -1151,8 +1145,8 @@ server <- function(input, output, session) {
       current_data_digits = 0,
       previous_data = mean(val_box_tag_zimmer_past()$`Anzahl belegte Zimmer`),
       previous_data_digits = 0,
-      label = tagList(p("Belegte Zimmer", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Belegte Zimmer", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
     )
   })
   
@@ -1163,8 +1157,8 @@ server <- function(input, output, session) {
       current_data_digits = 1,
       previous_data = mean(sum(val_box_tag_zimmer_past()$`Anzahl belegte Zimmer`) / sum(val_box_tag_zimmer_past()$`Anzahl verfügbare Zimmer`) * 100),
       previous_data_digits = 1,
-      label = tagList(p("Zimmerauslastung", style = "font-weight: bold;"),                       
-                      p("durchschnittlich", style = "font-size: 0.7em;")),
+      label = tagList(p("Zimmerauslastung", class = "value-box-headline"),                       
+                      p("durchschnittlich", class = "value-box-subline")),
       unit_value = "%",
       unit_change = "PP"
     )

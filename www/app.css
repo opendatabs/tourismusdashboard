@@ -78,6 +78,7 @@ h1{
   overflow-wrap: break-word;
   font-weight: 700;
   margin-bottom: 0px !important;
+  margin-top: 10px !important;
 }
 
 @media (min-width: 576px) {
@@ -183,11 +184,17 @@ h5{
   max-width: 100% !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
+  padding-left: 0px !important;
   display: flex !important;
   justify-content: space-between;
 }
 
+.navbar-header {
+  display: none !important;
+}
+
 .navbar-nav {
+  padding-left: 1.5rem !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
@@ -278,6 +285,10 @@ h5{
 
 .nav-pills .nav-link.active{
 color: white !important;
+}
+
+.nav-underline {
+  margin-bottom: 15px !important;
 }
 
 .nav-underline .nav-link{
@@ -464,6 +475,10 @@ a:hover {
    /*  width: auto !important;
     padding-right: 40px !important;
    margin-top: 10px !important;*/
+ }
+
+ .selectize-input .item {
+  font-size : 16px !important;
  }
 
 .selectize-input:hover{
@@ -715,13 +730,22 @@ gap: 0px !important;
   font-weight: 700 !important;
   color: #2a9749 !important;
 }
-.value-box-title{
+/*.value-box-title{
   font-size: 1rem !important;
-  /*font-weight: 700 !important;*/
+  font-weight: 700 !important;
   color: #333333 !important;
-}
+}*/
 .value-box-area{
 padding: 10px 5px 10px 5px !important;
+}
+
+.value-box-headline {
+  font-weight: bold !important;
+}
+
+.value-box-subline {
+  font-size: 0.8em !important;
+  padding-top: 4px !important;
 }
 
 /* Überschrift für die Cards mit den KPIs */

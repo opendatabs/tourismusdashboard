@@ -15,7 +15,7 @@ tourismus_events <- httr::GET("https://data.bs.ch/api/explore/v2.1/catalog/datas
   mutate(Datum = as.Date(Datum),
          Event = case_when(Event %in% c("Konzerte St.Jakob-Park", "Konzerte St.Jakobs-Halle & allg. Events") ~ Hinweise,
                            T ~ Event)) %>% 
-  filter(Event %in% c("Art Basel", "Basel Tattoo", "Fantasy Basel", "Swiss Indoors", "Weihnachtsmarkt", "Fasnacht") | str_detect(Event, "Dispenza")) %>% 
+  filter(Event %in% c("Art Basel", "Basel Tattoo", "Fantasy Basel", "Swiss Indoors", "Weihnachtsmarkt", "Fasnacht", "FEI World Cup Finals") | str_detect(Event, "Dispenza")) %>% 
   select(-Hinweise) %>% 
   {. ->> tourismus_events_fasnacht_fehler} %>%
   # Fasnacht enthält einen Tag zu wenig, der erste Tag der jeweiligen Fasnacht wird hinzugefügt
@@ -28,6 +28,13 @@ tourismus_events <- httr::GET("https://data.bs.ch/api/explore/v2.1/catalog/datas
   # Jahr an Event anhängen:
   mutate(Event = paste0(Event, " ", substr(Datum, 1, 4))) %>% 
   distinct()
+
+# manually add data to tourismus_events:
+tourismus_events <- tourismus_events %>% 
+  bind_rows(data.frame(
+    Datum = as.Date(c("2025-04-18", "2025-04-19", "2025-04-20")),
+    Event = rep("Karfreitag bis Ostersonntag", 3)
+  ))
 
 # load data for tourismus and left join with events: ####
 tourismus_taeglich_1 <- read.csv("data/100413_tourismus-daily.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
