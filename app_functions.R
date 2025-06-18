@@ -4,7 +4,9 @@
 
 # function for thousands separator and decimal comma:
 add_thousand_separator <- function(x, digits) {
-  formatted_number <- formatC(x, format = "f", big.mark = "\u2009", decimal.mark = ",", digits = digits)
+  # First round with the standard R round (which rounds half up)
+  x_rounded <- round_half_up(x, digits)
+  formatted_number <- formatC(x_rounded, format = "f", big.mark = "\u2009", decimal.mark = ",", digits = digits)
   return(formatted_number)
 }
 
