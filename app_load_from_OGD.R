@@ -8,7 +8,7 @@ conflicted::conflict_prefer("year", "lubridate")
 conflicted::conflict_prefer("filter", "dplyr")
 
 # Events definieren:
-event_manuell <- c("Dispenza|ESC|Jugendchor")
+event_manuell <- c("Dispenza|ESC")
 
 # load data for events:
 tourismus_events <- httr::GET("https://data.bs.ch/api/explore/v2.1/catalog/datasets/100074/exports/csv?&lang=de&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B") %>%
