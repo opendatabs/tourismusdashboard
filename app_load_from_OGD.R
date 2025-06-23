@@ -7,6 +7,9 @@ pacman::p_load(RODBC, odbc, DBI, tidyverse, data.table, httr, digest)
 conflicted::conflict_prefer("year", "lubridate")
 conflicted::conflict_prefer("filter", "dplyr")
 
+# Events definieren:
+event_manuell <- c("Dispenza|ESC|Jugendchor")
+
 # load data for events:
 tourismus_events <- httr::GET("https://data.bs.ch/api/explore/v2.1/catalog/datasets/100074/exports/csv?&lang=de&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B") %>%
   content(., "text") %>%
@@ -15,7 +18,7 @@ tourismus_events <- httr::GET("https://data.bs.ch/api/explore/v2.1/catalog/datas
   mutate(Datum = as.Date(Datum),
          Event = case_when(Event %in% c("Konzerte St.Jakob-Park", "Konzerte St.Jakobs-Halle & allg. Events") ~ Hinweise,
                            T ~ Event)) %>% 
-  filter(Event %in% c("Art Basel", "Basel Tattoo", "Fantasy Basel", "Swiss Indoors", "Weihnachtsmarkt", "Fasnacht", "FEI World Cup Finals") | str_detect(Event, "Dispenza")) %>% 
+  filter(Event %in% c("Art Basel", "Basel Tattoo", "Fantasy Basel", "Swiss Indoors", "Weihnachtsmarkt", "Fasnacht", "FEI World Cup Finals") | str_detect(Event, event_manuell)) %>% 
   select(-Hinweise) %>% 
   {. ->> tourismus_events_fasnacht_fehler} %>%
   # Fasnacht enthält einen Tag zu wenig, der erste Tag der jeweiligen Fasnacht wird hinzugefügt
