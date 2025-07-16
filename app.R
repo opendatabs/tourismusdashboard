@@ -1,10 +1,6 @@
 # ### Tourismus #######################################################################################
 # ####################### Dashboard ###################################################################
 # #####################################################################################################
-
-###Preliminaries: ####
-# Remove all objects from the global environment
-# rm(list = ls())
   
 # load packages:
 library(dplyr)
@@ -13,17 +9,11 @@ library(lubridate)
 library(tidyr)
 library(janitor)
 library(shiny)
-# library(shinydashboard)
-# library(stringr)
 library(highcharter)
 library(bslib)
-# library(jsonlite)
-# library(httr)
-# library(data.table)
 library(bsicons)
 library(shinyWidgets)
 library(shinycssloaders)
-# library(waiter)
 
 conflicted::conflict_prefer("filter", "dplyr")
 conflicted::conflict_prefer("month", "lubridate")
@@ -253,7 +243,13 @@ ui <- page_navbar(
             ),
             uiOutput("dynamic_day_plot1")
           ),
-          
+          layout_columns(
+            div(
+              p("Die abgebildeten Events wurden frei gewählt und stehen nicht zwangsläufig mit den Tourismus-Zahlen in Verbindung."),
+              style = "margin-top: -20px; font-size: 0.9em;"
+            )
+          ),
+
           layout_columns(
             DTOutput("dataTable1_Tag", height = 500) %>% withSpinner(color = "#2a9749")
           )
@@ -277,6 +273,12 @@ ui <- page_navbar(
               selected = "Verfügbare Zimmer"
             ),
             uiOutput("dynamic_day_plot2")
+          ),
+          layout_columns(
+            div(
+              p("Die abgebildeten Events wurden frei gewählt und stehen nicht zwangsläufig mit den Tourismus-Zahlen in Verbindung."),
+              style = "margin-top: -20px; font-size: 0.9em;"
+            )
           ),
           
           layout_columns(
@@ -1481,14 +1483,14 @@ server <- function(input, output, session) {
             shared = TRUE,
             formatter = JS(
               "function () {
-      let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
-      this.points.forEach(function (point) {
-        tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
-                  + point.series.name + ': <b>'
-                  + point.y.toFixed(0).toString().replace('.', ',') + '</b><br>';
-      });
-      return tooltip;
-    }"
+    let tooltip = '<span style=\"font-size: 10px; color: #333333\">' + this.x + '</span><br>';
+    this.points.forEach(function (point) {
+      tooltip += '<span style=\"color:' + point.color + '\">\u25CF</span> '
+                + point.series.name + ': <b>'
+                + Highcharts.numberFormat(point.y, 0, ',', ' ') + '</b><br>';
+    });
+    return tooltip;
+  }"
             )
           ) %>%
           hc_plotOptions(
