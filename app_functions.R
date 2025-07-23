@@ -142,30 +142,30 @@ stata_theme <- hc_theme(
       verticalAlign = "bottom",
       x = 10
     )
-  ),
-  exporting = list(
-    buttons = list(
-      contextButton = list(
-        menuItems = list(
-          list(text = '<span style="font-weight: bold; font-family: Inter;">Grafik herunterladen</span>'),
-          list(
-            text = "Bild - PNG",
-            onclick = JS("function () { this.exportChart({ type: 'image/png' }); }")
-          ),
-          list(
-            text = "Bild - JPEG",
-            onclick = JS("function () { this.exportChart({ type: 'image/jpeg' }); }")
-          ),
-          list(
-            text = "Bild - PDF",
-            onclick = JS("function () { this.exportChart({ type: 'application/pdf' }); }")
-          ),
-          list(
-            text = "Bild - SVG",
-            onclick = JS("function () { this.exportChart({ type: 'image/svg+xml' }); }")
-          )
-        )
-      )
-    )
   )
+  # exporting = list(
+  #   buttons = list(
+  #     contextButton = list(
+  #       menuItems = list(
+  #         list(text = '<span style="font-weight: bold; font-family: Inter;">Grafik herunterladen</span>'),
+  #         list(
+  #           text = "Bild - PNG",
+  #           onclick = JS("function () { this.exportChart({ type: 'image/png' }); }")
+  #         ),
+  #         list(
+  #           text = "Bild - JPEG",
+  #           onclick = JS("function () { this.exportChart({ type: 'image/jpeg' }); }")
+  #         ),
+  #         list(
+  #           text = "Bild - PDF",
+  #           onclick = JS("function () { this.exportChart({ type: 'application/pdf' }); }")
+  #         ),
+  #         list(
+  #           text = "Bild - SVG",
+  #           onclick = JS("function () { this.exportChart({ type: 'image/svg+xml' }); }")
+  #         )
+  #       )
+  #     )
+  #   )
+  # )
 )
