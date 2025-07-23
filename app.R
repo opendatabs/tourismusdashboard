@@ -1197,7 +1197,7 @@ server <- function(input, output, session) {
       ) %>%
       hc_colors(colors_plots) %>%
       hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle)) %>%
-      hc_exporting(enabled = TRUE) %>%
+      # hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
     # waiter_hide()
     hc
@@ -1266,7 +1266,7 @@ server <- function(input, output, session) {
                      style = list(
                        fontSize = "11px"),
                      text = paste0("Quelle: ", quelle)) %>%
-          hc_exporting(enabled = TRUE) %>%
+          # hc_exporting(enabled = TRUE) %>%
           hc_add_theme(stata_theme)
         
       } else {
@@ -1307,7 +1307,7 @@ server <- function(input, output, session) {
                    style = list(
                      fontSize = "11px"),
                    text = paste0("Quelle: ", quelle)) %>%
-        hc_exporting(enabled = TRUE) %>%
+        # hc_exporting(enabled = TRUE) %>%
         hc_add_theme(stata_theme)
     }
     
@@ -1367,7 +1367,7 @@ server <- function(input, output, session) {
                      style = list(
                        fontSize = "11px"),
                      text = paste0("Quelle: ", quelle)) %>%
-          hc_exporting(enabled = TRUE) %>%
+          # hc_exporting(enabled = TRUE) %>%
           hc_add_theme(stata_theme)
         
       } else {
@@ -1421,7 +1421,7 @@ server <- function(input, output, session) {
                    style = list(
                      fontSize = "11px"),
                    text = paste0("Quelle: ", quelle)) %>%
-        hc_exporting(enabled = TRUE) %>%
+        # hc_exporting(enabled = TRUE) %>%
         hc_add_theme(stata_theme)
     }
     
@@ -1522,7 +1522,7 @@ server <- function(input, output, session) {
                      style = list(
                        fontSize = "11px"),
                      text = paste0("Quelle: ", quelle)) %>%
-          hc_exporting(enabled = TRUE) %>%
+          # hc_exporting(enabled = TRUE) %>%
           hc_add_theme(stata_theme)
         
       } else {
@@ -1566,7 +1566,7 @@ server <- function(input, output, session) {
                    style = list(
                      fontSize = "11px"),
                    text = paste0("Quelle: ", quelle)) %>%
-        hc_exporting(enabled = TRUE) %>%
+        # hc_exporting(enabled = TRUE) %>%
         hc_add_theme(stata_theme)
     }
     
@@ -1627,7 +1627,7 @@ server <- function(input, output, session) {
                      style = list(
                        fontSize = "11px"),
                      text = paste0("Quelle: ", quelle)) %>%
-          hc_exporting(enabled = TRUE) %>%
+          # hc_exporting(enabled = TRUE) %>%
           hc_add_theme(stata_theme)
         
       } else {
@@ -1687,7 +1687,7 @@ server <- function(input, output, session) {
                    style = list(
                      fontSize = "11px"),
                    text = paste0("Quelle: ", quelle)) %>%
-        hc_exporting(enabled = TRUE) %>%
+        # hc_exporting(enabled = TRUE) %>%
         hc_add_theme(stata_theme)
     }
     
@@ -1822,7 +1822,7 @@ server <- function(input, output, session) {
     hc <- hc %>%
       hc_colors(colors_plots) %>%
       hc_credits(enabled = TRUE, style = list(fontSize = "11px"), text = paste0("Quelle: ", quelle)) %>%
-      hc_exporting(enabled = TRUE) %>%
+      # hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
     
     hc
@@ -1986,7 +1986,7 @@ server <- function(input, output, session) {
     hc %>%
       hc_colors(colors_plots) %>%
       hc_credits(enabled = TRUE, text = paste0("Quelle: ", quelle), style = list(fontSize = "11px")) %>%
-      hc_exporting(enabled = TRUE) %>%
+      # hc_exporting(enabled = TRUE) %>%
       hc_add_theme(stata_theme)
   })
   
