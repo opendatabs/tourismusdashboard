@@ -37,6 +37,10 @@ tourismus_events <- tourismus_events %>%
   bind_rows(data.frame(
     Datum = as.Date(c("2025-04-18", "2025-04-19", "2025-04-20")),
     Event = rep("Karfreitag bis Ostersonntag", 3)
+  )) %>% 
+  bind_rows(data.frame(
+    Datum = as.Date(c("2025-07-05", "2025-07-06", "2025-07-07")),
+    Event = rep("WordCamp Europe 2025 (Informatikveranstaltung)", 3)
   ))
 
 # load data for tourismus and left join with events: ####
