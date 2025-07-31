@@ -891,3 +891,9 @@ table.dataTable thead>tr>th.sorting:before,
 table.dataTable thead>tr>th.sorting:after{
   color: #2a9749 !important;
 }
+
+.html-fill-container {
+  height: auto !important;
+  overflow: visible !important;
+}
+
