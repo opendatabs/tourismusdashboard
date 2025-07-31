@@ -2023,7 +2023,9 @@ server <- function(input, output, session) {
       options = list(
         paging = FALSE,
         scrollY = "500px",
+        scrollX = TRUE, 
         scrollCollapse = TRUE,
+        autoWidth = TRUE,
         lengthChange = FALSE,
         searching = FALSE,
         info = FALSE,
@@ -2113,7 +2115,9 @@ server <- function(input, output, session) {
       options = list(
         paging = FALSE,
         scrollY = "500px",
+        scrollX = TRUE,
         scrollCollapse = TRUE,
+        autoWidth = TRUE,
         lengthChange = FALSE,
         searching = FALSE,
         info = FALSE,
@@ -2187,7 +2191,9 @@ server <- function(input, output, session) {
       options = list(
         paging = FALSE,
         scrollY = "500px",
+        scrollX = TRUE,
         scrollCollapse = TRUE,
+        autoWidth = TRUE,
         lengthChange = FALSE,
         searching = F,
         info = FALSE,
@@ -2258,7 +2264,9 @@ server <- function(input, output, session) {
       options = list(
         paging = FALSE,
         scrollY = "500px",
+        scrollX = TRUE,
         scrollCollapse = TRUE,
+        autoWidth = TRUE,
         lengthChange = FALSE,
         searching = F,
         info = FALSE,
