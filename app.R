@@ -26,7 +26,7 @@ tourismus_taeglich_1 <- readRDS("data/tourismus_taeglich_1.rds") %>%
 tourismus_taeglich_2 <- readRDS("data/tourismus_taeglich_2.rds") %>% 
   mutate(Datum = as.Date(Datum, format = "%Y-%m-%d"))
 
-# Define Variables
+# Define Variables -Test
 colors_plots <- rev(c("#245333", "#2a9749", "#b8d6be"))
 colors_valueboxes <- c("#2a9749", "#777777")
 quelle <- "Tourismusstatistik des Kantons Basel-Stadt"
