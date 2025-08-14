@@ -43,7 +43,7 @@ tourismus_events <- tourismus_events %>%
     Event = rep("WordCamp Europe 2025 (Informatikveranstaltung)", 3)
   )) %>% 
   bind_rows(data.frame(
-    Datum = as.Date(c(paste0("2025-07-0", c(2:9)), paste0("2025-07-", c(10:27)), "02-07-2025", "08-07-2025", "13-07-2025", "19-07-2025", "27-07-2025")),
+    Datum = as.Date(c(paste0("2025-07-0", c(2:9)), paste0("2025-07-", c(10:27)), "2025-07-02", "2025-07-08", "2025-07-13", "2025-07-19", "2025-07-27")),
     Event = c(rep("UEFA Women's EURO 2025 in Basel", 26), "UEFA Women's Euro 2025 (Schweiz - Norwegen)", "UEFA Women's Euro 2025 (Deutschland - Dänemark)", "UEFA Women's EURO 2025 (Niederlande - Frankreich)", "UEFA Women's EURO 2025 (Viertelfinale Frankreich – Deutschland)", "UEFA Women's EURO 2025 (Finale England – Spanien)")
   ))
 
