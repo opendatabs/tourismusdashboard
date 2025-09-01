@@ -41,7 +41,17 @@ tourismus_events <- tourismus_events %>%
   bind_rows(data.frame(
     Datum = as.Date(c("2025-06-05", "2025-06-06", "2025-06-07")),
     Event = rep("WordCamp Europe 2025 (Informatikveranstaltung)", 3)
+  )) %>% 
+  filter(Event != "Basel Tattoo 2024",
+         !Datum %in% c("2025-07-13", "2025-07-19")) %>% 
+  bind_rows(data.frame(
+    Datum = as.Date(c("2025-07-02", "2025-07-08", "2025-07-13", "2025-07-19", "2025-07-27")),
+    Event = c("UEFA Women's EURO 2025 Eröffnungsspiel (SUI - NOR)", "UEFA Women's EURO 2025 (GER - DEN)", "UEFA Women's EURO 2025 (NED - FRA) und Basel Tattoo 2025", "UEFA Women's EURO 2025 (FRA - GER) und Basel Tattoo 2025", "UEFA Women's EURO 2025 Finale (ENG - ESP)")
   ))
+  # bind_rows(data.frame(
+  #   Datum = as.Date(c(paste0("2025-07-0", c(2:9)), paste0("2025-07-", c(10:27)), "2025-07-02", "2025-07-08", "2025-07-13", "2025-07-19", "2025-07-27")),
+  #   Event = c(rep("UEFA Women's EURO 2025 in Basel", 26), "UEFA Women's Euro 2025 (Schweiz - Norwegen)", "UEFA Women's Euro 2025 (Deutschland - Dänemark)", "UEFA Women's EURO 2025 (Niederlande - Frankreich)", "UEFA Women's EURO 2025 (Viertelfinale Frankreich – Deutschland)", "UEFA Women's EURO 2025 (Finale England – Spanien)")
+  # ))
 
 # load data for tourismus and left join with events: ####
 tourismus_taeglich_1 <- read.csv("data/100413_tourismus-daily.csv", stringsAsFactors = FALSE, check.names = FALSE) %>% 
