@@ -57,8 +57,6 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-USER ${NB_USER}
-
 ## Uses packages as at 01/04/2025
 RUN echo "r <- getOption('repos'); \
 	  r['CRAN'] <- 'https://packagemanager.rstudio.com/cran/__linux__/focal/2025-04-01'; \
