@@ -38,20 +38,88 @@ DD <- max(tourismus_taeglich_1$Datum_Tag[tourismus_taeglich_1$Datum_Jahr == JJJJ
 monate_deutsch <- c("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember")
 
 # UI:
-ui <- page_navbar(
+ui <- tagList(
+  tags$head(
+    tags$link(
+      rel = "stylesheet",
+      type = "text/css",
+      href = paste0("app.css?v=", as.integer(Sys.time()))
+    )
+  ),
+  tags$div(
+    class = "header-container",
+    
+    tags$a(
+      href = "https://statistik.bs.ch/",
+      class = "link-header",
+      tags$svg(
+        viewBox = "0 0 20 34",
+        fill = "none",
+        xmlns = "http://www.w3.org/2000/svg",
+        class = "logo",
+        height = "24px",
+        tags$path(d = "M7.49659 17.8916H16.8848C17.1201 21.1464 19.9476 33.8162 19.9476 33.8162C19.9476 33.8162 16.677 30.8899 15.1848 29.3179C14.3535 30.8899 12.2593 33.8162 12.2593 33.8162C12.2593 33.8162 10.1064 30.8536 9.19463 29.3179C7.59659 30.9262 4.43188 33.8162 4.43188 33.8162C4.43188 33.8162 7.26522 20.751 7.49463 17.8916H7.49659Z", fill = "currentColor"),
+        tags$path(d = "M4.71426 11.0152C2.35936 11.4717 -0.16417 9.64565 0.0083787 6.47868C0.180928 3.31172 2.89661 0.610817 6.47897 0.083626C9.62799 -0.380531 13.2241 1.07879 14.8594 4.67936C15.879 6.92756 15.8731 9.30374 16.2456 11.699H8.48093C8.59661 11.2196 8.91426 9.8634 9.0025 8.55497C9.17701 5.95722 7.24956 4.55902 5.61426 4.7443C4.09857 4.91621 3.26328 5.98014 3.2123 6.96385C3.18289 7.54452 3.45152 8.31621 4.17505 8.39071C4.60642 8.43655 5.03975 8.1252 5.06916 7.72025C5.09269 7.3879 4.76916 7.08801 4.51034 7.08801C4.29857 7.08801 4.15348 7.25992 4.03387 7.4261C3.88093 7.0307 4.30054 5.96677 5.33387 5.91329C6.2574 5.86554 7.27897 6.70217 7.36132 7.88261C7.47112 9.44891 6.3672 10.6962 4.71426 11.0152Z", fill = "currentColor"),
+        tags$path(d = "M17.6084 16.1744H7.07706C6.74373 16.1744 6.4751 16.4361 6.4751 16.7608C6.4751 17.0856 6.80059 17.3472 7.13196 17.3472H17.5516C17.8849 17.3472 18.2084 17.0856 18.2084 16.7608C18.2084 16.4361 17.9398 16.1744 17.6065 16.1744H17.6084Z", fill = "currentColor"),
+        tags$path(d = "M16.9514 12.2167H7.422C7.08867 12.2167 6.76514 12.4784 6.76514 12.8031C6.76514 13.1278 7.03376 13.3895 7.3671 13.3895H17.0063C17.3396 13.3895 17.6083 13.1278 17.6083 12.8031C17.6083 12.4784 17.2828 12.2167 16.9514 12.2167Z", fill = "currentColor"),
+        tags$path(d = "M18.2712 13.8766H6.37315C5.87119 13.8766 5.40845 14.272 5.40845 14.761C5.40845 15.25 5.87119 15.6454 6.37315 15.6454H18.2712C18.7732 15.6454 19.2359 15.25 19.2359 14.761C19.2359 14.272 18.7732 13.8766 18.2712 13.8766Z", fill = "currentColor")
+      ),
+      tags$div(
+        class = "kanton-name",
+        tags$span("Kanton Basel-Stadt")
+      )
+    ),
+    tags$a(
+      href = "https://www.bs.ch/pd/statistik",
+      class = "about",
+      tags$span("Über uns"),
+      
+      tags$svg(
+        viewBox = "0 0 20 20",
+        fill = "none",
+        xmlns = "http://www.w3.org/2000/svg",
+        class = "arrow-up-right",
+        height = "20px",
+        width = "20px",
+        tags$path(
+          d = "M6.52552 13.6828L13.8912 6.31715M13.8912 6.31715L6.82015 6.31715M13.8912 6.31715L13.8912 13.3882",
+          stroke = "currentColor",
+          `stroke-width` = "2",
+          `stroke-linecap` = "round",
+          `stroke-linejoin` = "round"
+        )
+      )
+    )
+  ),
+  
+  bslib::page_navbar(
   
   theme = bs_theme(
     version = 5,
     primary = "#1e6d8b",
     secondary = "white"
   ),
-  
+  header = tags$head(
+    tags$script(
+      HTML(
+        "
+          // Funktion zum Ermitteln der Scrollbar-Breite und Setzen als CSS-Variable
+          function setScrollbarWidthVar() {
+            var width = window.innerWidth - document.documentElement.clientWidth;
+            document.documentElement.style.setProperty('--scrollbar-width', width + 'px');
+          }
+    
+          // Initial setzen beim Laden der Seite
+          setScrollbarWidthVar();
+    
+          // Auch bei Fenster-Resize aktualisieren
+          window.addEventListener('resize', setScrollbarWidthVar);
+          "
+      )
+    )
+  ),
   bg = "#ddecde",
   underline = FALSE,
-  header = tags$head(
-                     tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
-                     tags$link(href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap", rel = "stylesheet")
-  ),
   # 
   # footer = tags$footer(
   #   style = "font-size: 11px; text-align: center; width; 100%; position: relative; bottom: 0;",
@@ -78,7 +146,6 @@ ui <- page_navbar(
         " gegenüber dem Vorjahr"
       )
     ),
-    page_fluid(
     layout_columns(
       uiOutput("Logiernaechte"),
       uiOutput("Ankuenfte"),
@@ -88,20 +155,14 @@ ui <- page_navbar(
       uiOutput("verfuegbareZimmer"),
       uiOutput("belegteZimmer"),
       uiOutput("Zimmerauslastung")
-    )
     ),
-    layout_columns(
-      page_fluid(
         h4("Logiernächte nach Herkunftsland - Top 10"),
-        highchartOutput("barPlot_herkunft"))
-    )
-  ),
+        highchartOutput("barPlot_herkunft")),
   
   nav_panel(
     "Monat",
     h1("Tourismuszahlen Basel-Stadt"),
     uiOutput("dynamic_subtitle1"),
-    page_fluid(
       div(
         class = "full-width-div",
         div(
@@ -133,8 +194,6 @@ ui <- page_navbar(
                                        uiOutput("Ankuenfte_Monat"),
                                        uiOutput("Aufenthaltsdauer_Monat")
                                      ),
-                                   
-                                       page_fluid(
                                          h4("Tourismuszahlen nach Monat"),
                                          radioButtons(
                                            inline = TRUE,
@@ -143,10 +202,9 @@ ui <- page_navbar(
                                            choices = c("Logiernächte", "Ankünfte", "Aufenthaltsdauer (in Tagen)"),
                                            selected = "Logiernächte"
                                          ),
-                                           uiOutput("dynamic_month_plot1")
-                                       ),
+                                           uiOutput("dynamic_month_plot1"),
                          layout_columns(
-                                         DTOutput("dataTable1_Monat",  height = 500) %>% withSpinner(color="#2a9749")
+                                         DTOutput("dataTable1_Monat") %>% withSpinner(color="#2a9749")
                          )
                                      
                        ),
@@ -157,8 +215,6 @@ ui <- page_navbar(
                                        uiOutput("belegteZimmer_Monat"),
                                        uiOutput("Zimmerauslastung_Monat")
                                      ),
-                           
-                                       page_fluid(
                                          h4("Tourismuszahlen nach Monat"),
                                          radioButtons(
                                            inline = TRUE,
@@ -167,24 +223,19 @@ ui <- page_navbar(
                                            choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
                                            selected = "Verfügbare Zimmer"
                                          ),
-                                           uiOutput("dynamic_month_plot2")
-                                       ),
+                                           uiOutput("dynamic_month_plot2"),
                          layout_columns(
-                                         DTOutput("dataTable2_Monat", height = 500) %>% withSpinner(color="#2a9749")
+                                         DTOutput("dataTable2_Monat") %>% withSpinner(color="#2a9749")
                          )
                                      
                        )
       )
-      
-    )
   ),
   
   nav_panel(
     "Tag",
     h1("Tourismuszahlen Basel-Stadt"),
     uiOutput("dynamic_subtitle2"),
-    
-    page_fluid(
       div(
         class = "full-width-div",
         div(
@@ -231,8 +282,6 @@ ui <- page_navbar(
             uiOutput("Ankuenfte_Tag"),
             uiOutput("Aufenthaltsdauer_Tag")
           ),
-          
-          page_fluid(
             h4("Tourismuszahlen nach Tag"),
             radioButtons(
               inline = TRUE,
@@ -241,17 +290,11 @@ ui <- page_navbar(
               choices = c("Logiernächte", "Ankünfte"),
               selected = "Logiernächte"
             ),
-            uiOutput("dynamic_day_plot1")
-          ),
-          layout_columns(
-            div(
+            uiOutput("dynamic_day_plot1"),
               p("Die abgebildeten Events wurden frei gewählt und stehen nicht zwangsläufig mit den Tourismus-Zahlen in Verbindung."),
-              style = "margin-top: -20px; font-size: 0.9em;"
-            )
-          ),
-
+              br(),
           layout_columns(
-            DTOutput("dataTable1_Tag", height = 500) %>% withSpinner(color = "#2a9749")
+            DTOutput("dataTable1_Tag") %>% withSpinner(color = "#2a9749")
           )
         ),
         
@@ -262,8 +305,6 @@ ui <- page_navbar(
             uiOutput("belegteZimmer_Tag"),
             uiOutput("Zimmerauslastung_Tag")
           ),
-          
-          page_fluid(
             h4("Tourismuszahlen nach Tag"),
             radioButtons(
               inline = TRUE,
@@ -272,22 +313,14 @@ ui <- page_navbar(
               choices = c("Verfügbare Zimmer", "Belegte Zimmer", "Zimmerauslastung"),
               selected = "Verfügbare Zimmer"
             ),
-            uiOutput("dynamic_day_plot2")
-          ),
-          layout_columns(
-            div(
+            uiOutput("dynamic_day_plot2"),
               p("Die abgebildeten Events wurden frei gewählt und stehen nicht zwangsläufig mit den Tourismus-Zahlen in Verbindung."),
-              style = "margin-top: -20px; font-size: 0.9em;"
-            )
-          ),
-          
           layout_columns(
-            DTOutput("dataTable2_Tag", height = 500) %>% withSpinner(color = "#2a9749")
+            DTOutput("dataTable2_Tag") %>% withSpinner(color = "#2a9749")
           )
         )
       )
-    )
-  ),
+    ),
   
   nav_panel(
     "Info",
@@ -302,13 +335,51 @@ ui <- page_navbar(
         uiOutput("info_text")
       )
     ),
-    page_fluid(
-      h3("Kontakt"),
-      img(src = "fh.jpg"),
+    tagList(
+      h3("Kontakt", style = "margin-bottom: 8px; margin-top: 1.5rem;"),
+      img(src = "fh.jpg", width = "206px", height = "137px"),
       p("Fabienne Hofer", style = "font-weight: bold;"),
-      a("+41 61 267 87 47", class = "kontakt"),
-      a("fabienne.hofer@bs.ch", href = "mailto:fabienne.hofer@bs.ch", class = "kontakt")
-      
+      div(
+        style = "display: flex; flex-wrap: wrap; gap: 10px;",
+        a(
+          HTML(paste0(
+            "\u00A0",
+            img(
+              src = "phone.svg",
+              width = "14px",
+              height = "14px",
+              class = "phone-icon"
+            ),
+            " +41 61 267 87 47"
+          )),
+          class = "kontakt"
+        ),
+        a(
+          paste0("\u00A0", "\u00A0", "fabienne.hofer@bs.ch"),
+          href = "mailto:fabienne.hofer@bs.ch",
+          class = "kontakt"
+          )
+        ) 
+      )
+    )
+  ),
+tags$div(
+  class = "footer-container",
+  tags$div(
+    class = "footer-inner",
+    
+    tags$div(
+      class = "footer-links",
+      tags$a(href = "https://www.bs.ch/", "Startseite", class = "link-footer"),
+      tags$a(href = "https://www.bs.ch/datenschutzerklaerung", "Datenschutz", class = "link-footer"),
+      tags$a(href = "https://www.bs.ch/impressum", "Impressum", class = "link-footer"),
+      tags$a(href = "https://www.bs.ch/ombudsstelle", "Ombudsstelle", class = "link-footer")
+    ),
+    
+    tags$div(
+      class = "footer-copyright",
+      "© 2025 Basel-Stadt"
+      )
     )
   )
 )
@@ -334,12 +405,25 @@ server <- function(input, output, session) {
       dateFormat = "MMMM",
       range = TRUE,
       label = tooltip(
-        trigger = list(
-          HTML(paste0(bs_icon("calendar3"), " Monat(e)")),
-          bs_icon("info-circle")
-        ),
-        'Wählen Sie einen oder mehrere Monate (Zeitspanne) aus.'
-      )
+          trigger = list(
+            HTML(paste0(bs_icon("calendar3"), " Monat(e)")),
+            icon("circle-info", class = "info-icon-small")
+          ),
+          card(
+            p("Hinweis", class = "card-info-header"),
+            p("Wählen Sie einen oder mehrere Monate (Zeitspanne) aus.", class = "card-info-text"),
+            tags$div(class = "card-info-icon",
+                     tags$img(src = "hinweise_no_rounded.svg", style = "width: 26px; height: 30px;")
+            ),
+            class = "card-info")
+        )
+      #   tooltip(
+      #   trigger = list(
+      #     HTML(paste0(bs_icon("calendar3"), " Monat(e)")),
+      #     bs_icon("info-circle")
+      #   ),
+      #   'Wählen Sie einen oder mehrere Monate (Zeitspanne) aus.'
+      # )
     )
   })
    
@@ -371,7 +455,7 @@ server <- function(input, output, session) {
   })
   
   reactive_value_text2 <- reactive({
-    req(input$startDate_tag, input$endDate_tag, input$window_width)
+    req(input$startDate_tag, input$endDate_tag)
     
     date_format <-  "%e. %B %Y"
     
