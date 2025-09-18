@@ -7,6 +7,25 @@ pacman::p_load(RODBC, odbc, DBI, tidyverse, data.table, httr, digest)
 conflicted::conflict_prefer("year", "lubridate")
 conflicted::conflict_prefer("filter", "dplyr")
 
+# ---- helpers ------------------------------------------------------------
+ogd_csv_url <- function(dataset_id) {
+  sprintf(paste0(
+    "https://data.bs.ch/api/explore/v2.1/catalog/datasets/%s/exports/csv?",
+    "lang=de&timezone=Europe%%2FBerlin&use_labels=true&delimiter=%%2C"
+  ), dataset_id)
+}
+
+download_csv_if_missing <- function(local_path, dataset_id) {
+  if (!file.exists(local_path)) {
+    message(sprintf("Local file %s not found. Downloading dataset %s…", local_path, dataset_id))
+    txt <- httr::GET(ogd_csv_url(dataset_id)) %>% httr::content("text")
+    dt  <- data.table::fread(txt, sep = ",")
+    # write as CSV (comma-delimited)
+    fwrite(dt, local_path)  # data.table::fwrite is fast & robust
+    message(sprintf("Saved %s", local_path))
+  }
+}
+
 # Events definieren:
 event_manuell <- c("Dispenza|ESC")
 
@@ -52,6 +71,11 @@ tourismus_events <- tourismus_events %>%
     Datum = as.Date(c("2025-08-20")),
     Event = "UEFA Champions League (FCB - FCK)"
   )) 
+
+
+# ---- ensure local CSVs (download if missing) ----------------------------
+download_csv_if_missing("data/100413_tourismus-daily.csv", "100413")
+download_csv_if_missing("data/100414_tourismus-daily.csv", "100414")
 
 
 # load data for tourismus and left join with events: ####
