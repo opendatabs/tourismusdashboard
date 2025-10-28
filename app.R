@@ -392,6 +392,15 @@ tags$div(
     ),
 
     tags$div(
+      class = "footer-icon",
+      tags$a(href = "https://github.com/opendatabs/tourismusdashboard", "Tourismus-Dashboard auf GitHub ",
+      target = "_blank",  # opens in a new tab
+      icon("github")  # Font Awesome GitHub icon
+    )
+    ),
+    br(),
+    
+    tags$div(
       class = "footer-copyright",
       "© 2025 Basel-Stadt"
       )
