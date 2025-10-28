@@ -183,3 +183,4 @@ write_if_changed <- function(data, path) {
 # write CSV for OGD:
 write_if_changed(tourismus_taeglich_1, "data/100413_tourismus-daily.csv")
 write_if_changed(tourismus_taeglich_2, "data/100414_tourismus-daily.csv")
+
